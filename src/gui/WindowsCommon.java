@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public interface WindowsCommon {
+public abstract class WindowsCommon {
     static void exitWindow(Component window) {
         if (window instanceof JInternalFrame)
         {
