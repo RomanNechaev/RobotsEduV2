@@ -4,7 +4,7 @@ public final class Logger
 {
     private static final LogWindowSource defaultLogSource;
     static {
-        defaultLogSource = new LogWindowSource(100);
+        defaultLogSource = new LogWindowSource(10);
     }
     
     private Logger()
@@ -14,6 +14,11 @@ public final class Logger
     public static void debug(String strMessage)
     {
         defaultLogSource.append(LogLevel.Debug, strMessage);
+    }
+
+    public static void debugDelete()
+    {
+        defaultLogSource.deleteOldEntry();
     }
     
     public static void error(String strMessage)

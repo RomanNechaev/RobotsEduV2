@@ -47,22 +47,31 @@ public class LogWindowSource
     
     public void append(LogLevel logLevel, String strMessage)
     {
-        LogEntry entry = new LogEntry(logLevel, strMessage);
-        m_messages.add(entry);
-        LogChangeListener [] activeListeners = m_activeListeners;
-        if (activeListeners == null)
-        {
-            synchronized (m_listeners)
-            {
-                if (m_activeListeners == null)
-                {
-                    activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                    m_activeListeners = activeListeners;
+        if(size()<m_iQueueLength) {
+            LogEntry entry = new LogEntry(logLevel, strMessage);
+            m_messages.add(entry);
+            LogChangeListener[] activeListeners = m_activeListeners;
+
+            if (activeListeners == null) {
+                synchronized (m_listeners) {
+                    if (m_activeListeners == null) {
+                        activeListeners = m_listeners.toArray(new LogChangeListener[0]);
+                        m_activeListeners = activeListeners;
+                    }
                 }
             }
+            for (LogChangeListener listener : activeListeners) {
+                listener.onLogChanged();
+            }
         }
-        for (LogChangeListener listener : activeListeners)
-        {
+    }
+
+    public void deleteOldEntry()
+    {
+        m_messages.remove(1);
+        LogChangeListener[] activeListeners = m_activeListeners;
+
+        for (LogChangeListener listener : activeListeners) {
             listener.onLogChanged();
         }
     }
