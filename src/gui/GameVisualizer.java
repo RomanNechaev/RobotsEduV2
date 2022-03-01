@@ -124,7 +124,7 @@ public class GameVisualizer extends JPanel {
         int robotCenterY = round(m_robotPositionY);
         AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
         g.setTransform(t);
-        g.setColor(Color.MAGENTA);
+        g.setColor(Color.GREEN);
         fillOval(g, robotCenterX, robotCenterY, 30, 10);
         g.setColor(Color.BLACK);
         drawOval(g, robotCenterX, robotCenterY, 30, 10);
