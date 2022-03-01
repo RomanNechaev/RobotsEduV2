@@ -13,6 +13,7 @@ public class MenuGenerator extends JMenuBar {
         add(createTestParagraph());
         add(createCloseParagraph());
     }
+
     private JMenu createLookParagraph() {
         JMenu lookAndFeelMenu = new JMenu("Режим отображения");
         lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);
@@ -37,42 +38,45 @@ public class MenuGenerator extends JMenuBar {
         }
         return lookAndFeelMenu;
     }
-        private JMenu createTestParagraph()
-        {
-            JMenu testMenu = new JMenu("Тесты");
-            testMenu.setMnemonic(KeyEvent.VK_T);
-            testMenu.getAccessibleContext().setAccessibleDescription(
-                    "Тестовые команды");
 
-            {
-                JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
-                addLogMessageItem.addActionListener((event) -> Logger.debug("Новая строка"));
-                testMenu.add(addLogMessageItem);
-            }
-            return testMenu;
+    private JMenu createTestParagraph() {
+        JMenu testMenu = new JMenu("Тесты");
+        testMenu.setMnemonic(KeyEvent.VK_T);
+        testMenu.getAccessibleContext().setAccessibleDescription(
+                "Тестовые команды");
+
+        {
+            JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
+            addLogMessageItem.addActionListener((event) -> Logger.debug("Новая строка"));
+            testMenu.add(addLogMessageItem);
+
         }
-    private JButton createCloseParagraph()
-    {
+        {
+            JMenuItem addLogMessageItem = new JMenuItem("Удалить старую запись", KeyEvent.VK_S);
+            addLogMessageItem.addActionListener((event) -> Logger.debugDelete());
+            testMenu.add(addLogMessageItem);
+        }
+        return testMenu;
+    }
+
+    private JButton createCloseParagraph() {
         JButton closeButton = new JButton("Выход");
         closeButton.setMnemonic(KeyEvent.VK_Q);
+        closeButton.setContentAreaFilled(false);
         closeButton.getAccessibleContext().setAccessibleDescription("Выход из программы");
         closeButton.addActionListener(e -> {
-            Window window = SwingUtilities.windowForComponent((JButton)e.getSource());
+            Window window = SwingUtilities.windowForComponent((JButton) e.getSource());
             window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
         });
         return closeButton;
     }
 
-    private void setLookAndFeel(String className)
-    {
-        try
-        {
+    private void setLookAndFeel(String className) {
+        try {
             UIManager.setLookAndFeel(className);
             SwingUtilities.updateComponentTreeUI(this);
-        }
-        catch (ClassNotFoundException | InstantiationException
-                | IllegalAccessException | UnsupportedLookAndFeelException e)
-        {
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException | UnsupportedLookAndFeelException e) {
             // just ignore
         }
     }
