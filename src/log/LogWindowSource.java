@@ -84,6 +84,16 @@ public class LogWindowSource
             listener.onLogChanged();
         }
     }
+
+    public void reset()
+    {
+        m_messages.clear();
+        LogChangeListener[] activeListeners = m_activeListeners;
+
+        for (LogChangeListener listener : activeListeners) {
+            listener.onLogChanged();
+        }
+    }
     
     public int size()
     {

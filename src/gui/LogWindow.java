@@ -11,6 +11,8 @@ import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
 
+import static gui.WindowsConst.*;
+
 public class LogWindow extends JInternalFrame implements LogChangeListener
 {
     private LogWindowSource m_logSource;
@@ -24,7 +26,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
         var textArea = new TextArea("");
         textArea.setEditable(false);
         m_logContent = textArea;
-        m_logContent.setSize(200, 500);
+        m_logContent.setSize(logContentWidth, logContentHeight);
         
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);

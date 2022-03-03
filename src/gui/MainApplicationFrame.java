@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import log.Logger;
 import static gui.WindowsCommon.*;
+import static gui.WindowsConst.*;
 
 /**
  * Что требуется сделать:
@@ -43,7 +44,7 @@ public class MainApplicationFrame extends JFrame
     protected GameWindow createGameWindow()
     {
         GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400, 400);
+        gameWindow.setSize(gameWindowWidth, gameWindowHeight);
         return gameWindow;
     }
 
@@ -51,7 +52,7 @@ public class MainApplicationFrame extends JFrame
     {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
         logWindow.setLocation(10,10);
-        logWindow.setSize(300, 800);
+        logWindow.setSize(logWindowWidth, logWindowHeight);
         setMinimumSize(logWindow.getSize());
         logWindow.pack();
         Logger.debug("Протокол работает");

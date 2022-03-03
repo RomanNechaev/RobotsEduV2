@@ -2,6 +2,7 @@ import junit.framework.TestCase;
 import log.LogConst;
 import log.LogWindowSource;
 import log.Logger;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,12 @@ public class LogTests extends TestCase {
         logSource = log.getDefaultLogSource();
     }
 
+    @AfterEach
+    public void afterEach(){
+        logSource.reset();
+    }
+
+
     @Test
     public void firstMessage(){
         Logger.debug("Тест");
@@ -31,7 +38,6 @@ public class LogTests extends TestCase {
             Logger.debug("Тест");
         }
         queueLength = logSource.size();
-
         Assertions.assertEquals(queueLength, LogConst.iQueueLength);
     }
 
@@ -41,7 +47,6 @@ public class LogTests extends TestCase {
             Logger.debug("Тест");
         }
         queueLength = logSource.size();
-
         Assertions.assertEquals(queueLength, 3);
     }
 }
