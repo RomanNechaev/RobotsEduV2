@@ -11,7 +11,6 @@ public class MathOperations {
     public static double angleTo(double fromX, double fromY, double toX, double toY) {
         double diffX = toX - fromX;
         double diffY = toY - fromY;
-
         return asNormalizedRadians(Math.atan2(diffY, diffX));
     }
 
@@ -26,5 +25,19 @@ public class MathOperations {
             angle -= 2*Math.PI;
         }
         return angle;
+    }
+
+    public static double applyLimits(double value, double min, double max)
+    {
+        if (value < min)
+            return min;
+        if (value > max)
+            return max;
+        return value;
+    }
+
+    public static int round(double value)
+    {
+        return (int)(value + 0.5);
     }
 }

@@ -3,6 +3,7 @@ package gui;
 import java.awt.*;
 import javax.swing.*;
 import log.Logger;
+import static gui.WindowsCommon.*;
 
 /**
  * Что требуется сделать:
@@ -24,22 +25,26 @@ public class MainApplicationFrame extends JFrame
             screenSize.height - inset*2);
 
         setContentPane(desktopPane);
+        setJMenuBar(new gui.MenuGenerator());
 
 
         LogWindow logWindow = createLogWindow();
+        GameWindow gameWindow = createGameWindow();
         addWindow(logWindow);
-
-        GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400,  400);
         addWindow(gameWindow);
 
-        setJMenuBar(new gui.MenuGenerator());
-
-        WindowsCommon.exitWindow(gameWindow);
-        WindowsCommon.exitWindow(logWindow);
-        WindowsCommon.exitWindow(MainApplicationFrame.this);
+        exitWindow(gameWindow);
+        exitWindow(logWindow);
+        exitWindow(MainApplicationFrame.this);
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+    }
+
+    protected GameWindow createGameWindow()
+    {
+        GameWindow gameWindow = new GameWindow();
+        gameWindow.setSize(400, 400);
+        return gameWindow;
     }
 
     protected LogWindow createLogWindow()

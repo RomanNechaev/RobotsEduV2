@@ -1,8 +1,11 @@
 package log;
 
+import gui.WindowsCommon;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static gui.WindowsCommon.*;
+import log.Logger;
 /**
  * Что починить:
  * 1. Этот класс порождает утечку ресурсов (связанные слушатели оказываются
@@ -15,7 +18,7 @@ import java.util.Collections;
 public class LogWindowSource
 {
     private int m_iQueueLength;
-    
+
     private ArrayList<LogEntry> m_messages;
     private final ArrayList<LogChangeListener> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
@@ -47,7 +50,7 @@ public class LogWindowSource
     
     public void append(LogLevel logLevel, String strMessage)
     {
-        if(size()<m_iQueueLength) {
+        if(size() < m_iQueueLength) {
             LogEntry entry = new LogEntry(logLevel, strMessage);
             m_messages.add(entry);
             LogChangeListener[] activeListeners = m_activeListeners;
@@ -62,6 +65,12 @@ public class LogWindowSource
             }
             for (LogChangeListener listener : activeListeners) {
                 listener.onLogChanged();
+            }
+        }
+        else {
+            if (confirmClearing()) {
+                deleteOldEntry();
+                Logger.debug("Очень новая строка");
             }
         }
     }

@@ -4,10 +4,10 @@ public final class Logger
 {
     private static final LogWindowSource defaultLogSource;
     static {
-        defaultLogSource = new LogWindowSource(10);
+        defaultLogSource = new LogWindowSource(LogConst.iQueueLength);
     }
-    
-    private Logger()
+
+    public Logger()
     {
     }
 
