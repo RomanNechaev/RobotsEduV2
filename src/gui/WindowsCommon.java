@@ -1,16 +1,14 @@
 package gui;
 
-import log.LogEntry;
-
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyVetoException;
 import java.io.*;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public abstract class WindowsCommon {
     static void exitWindow(Component window) {
@@ -19,8 +17,11 @@ public abstract class WindowsCommon {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
+                        var iconState = e.getInternalFrame().isIcon();
                         var windowLocation = e.getInternalFrame().getLocation();
-                        var windowLocationConfig = new Configuration(windowLocation.x, windowLocation.y);
+                        var windowSize = e.getInternalFrame().getSize();
+                        var name = e.getInternalFrame().getName();
+                        var windowLocationConfig = new GameWindowConfiguration(windowLocation.x, windowLocation.y, windowSize.width, windowSize.height, iconState, name);
                         writeConfig(windowLocationConfig);
                     }
                 }
@@ -30,9 +31,6 @@ public abstract class WindowsCommon {
                 public void windowClosing(WindowEvent e) {
                     if (confirmClosing(e.getWindow())) {
                         e.getWindow().setVisible(false);
-                        var windowLocation = e.getWindow().getLocation();
-                        var windowLocationConfig = new Configuration(windowLocation.x, windowLocation.y);
-                        writeConfig(windowLocationConfig);
                         System.exit(0);
                     }
                 }
@@ -40,10 +38,11 @@ public abstract class WindowsCommon {
         }
     }
 
-    public static void writeConfig(Configuration config) {
-        File file = new File("data.bin");
+    public static void writeConfig(GameWindowConfiguration config) {
+        File file = new File(System.getProperty("user.home"), "data.bin");
+        var append = Files.exists(Path.of(System.getProperty("user.home"), "data.bin"));
         try {
-            OutputStream os = new FileOutputStream(file);
+            OutputStream os = new FileOutputStream(file, append);
             try {
                 ObjectOutputStream oos =
                         new ObjectOutputStream(new BufferedOutputStream(os));
@@ -56,22 +55,22 @@ public abstract class WindowsCommon {
             } finally {
                 os.close();
             }
-            InputStream is = new FileInputStream(file);
-            try {
-                ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(is));
-                try {
-                    Configuration restored = (Configuration) ois.readObject();
-                    System.out.println(restored.getGameWindowLocationX() + ": " + restored.getGameWindowLocationY());
-                    boolean bSame = (config == restored);
-                    System.out.println("Same object: " + bSame);
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                } finally {
-                    ois.close();
-                }
-            } finally {
-                is.close();
-            }
+//            InputStream is = new FileInputStream(file);
+//            try {
+//                ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(is));
+//                try {
+//                    GameWindowConfiguration restored = (GameWindowConfiguration) ois.readObject();
+//                    System.out.println(restored.getLocationX() + ": " + restored.getLocationY() + restored.getName());
+//                    boolean bSame = (config == restored);
+//                    System.out.println("Same object: " + bSame);
+//                } catch (ClassNotFoundException ex) {
+//                    ex.printStackTrace();
+//                } finally {
+//                    ois.close();
+//                }
+//            } finally {
+//                is.close();
+//            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

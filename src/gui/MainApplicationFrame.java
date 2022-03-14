@@ -19,7 +19,7 @@ import static gui.WindowsConst.*;
 public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
-    public MainApplicationFrame() {
+    public MainApplicationFrame() throws IOException, ClassNotFoundException {
 
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
@@ -35,19 +35,44 @@ public class MainApplicationFrame extends JFrame
 
         LogWindow logWindow = createLogWindow();
         GameWindow gameWindow = createGameWindow();
-        try {
-            gameWindow.setIcon(true);
-        } catch (PropertyVetoException e) {
-            e.printStackTrace();
+//        try {
+//            var config = getConfig();
+//            gameWindow.setIcon(config.getIconState());
+//            gameWindow.setLocation(config.getLocationX(),config.getLocationY());
+//            gameWindow.setSize(config.getWindowWidth(),config.getWindowHeight());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (PropertyVetoException e) {
+//            e.printStackTrace();
+//        }
+
+        var t = 0;
+
+        while(t!=2) {
+            switch (getConfig().getName()) {
+                case "GameWindow":
+                    try {
+                        gameWindow.setIcon(getConfig().getIconState());
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
+                    }
+                    gameWindow.setLocation(getConfig().getLocationX(), getConfig().getLocationY());
+                    gameWindow.setSize(getConfig().getWindowWidth(), getConfig().getWindowHeight());
+                case "LogWindow":
+                    try {
+                        logWindow.setIcon(getConfig().getIconState());
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
+                    }
+                    logWindow.setLocation(getConfig().getLocationX(), getConfig().getLocationY());
+                    logWindow.setSize(getConfig().getWindowWidth(), getConfig().getWindowHeight());
+            }
+            t+=1;
         }
-        try {
-            var config = getConfig();
-            gameWindow.setLocation(config.getGameWindowLocationX(),config.getGameWindowLocationY());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
+
         addWindow(logWindow);
         addWindow(gameWindow);
 
@@ -58,15 +83,15 @@ public class MainApplicationFrame extends JFrame
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
-    public static Configuration getConfig() throws IOException, ClassNotFoundException {
+    public static GameWindowConfiguration getConfig() throws IOException, ClassNotFoundException {
         ObjectInputStream objectInputStream = null;
         try {
             objectInputStream = new ObjectInputStream(
-                    new FileInputStream("data.bin"));
+                    new FileInputStream(System.getProperty("user.home")+"\\"+"data.bin"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Configuration config = (Configuration) objectInputStream.readObject();
+        GameWindowConfiguration config = (GameWindowConfiguration) objectInputStream.readObject();
         objectInputStream.close();
         return config;
     }
