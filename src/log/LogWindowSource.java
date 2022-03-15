@@ -1,8 +1,11 @@
 package log;
 
+import gui.WindowsCommon;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static gui.WindowsCommon.*;
+import log.Logger;
 /**
  * Что починить:
  * 1. Этот класс порождает утечку ресурсов (связанные слушатели оказываются
@@ -15,7 +18,7 @@ import java.util.Collections;
 public class LogWindowSource
 {
     private int m_iQueueLength;
-    
+
     private ArrayList<LogEntry> m_messages;
     private final ArrayList<LogChangeListener> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
@@ -47,22 +50,47 @@ public class LogWindowSource
     
     public void append(LogLevel logLevel, String strMessage)
     {
-        LogEntry entry = new LogEntry(logLevel, strMessage);
-        m_messages.add(entry);
-        LogChangeListener [] activeListeners = m_activeListeners;
-        if (activeListeners == null)
-        {
-            synchronized (m_listeners)
-            {
-                if (m_activeListeners == null)
-                {
-                    activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                    m_activeListeners = activeListeners;
+        if(size() < m_iQueueLength) {
+            LogEntry entry = new LogEntry(logLevel, strMessage);
+            m_messages.add(entry);
+            LogChangeListener[] activeListeners = m_activeListeners;
+
+            if (activeListeners == null) {
+                synchronized (m_listeners) {
+                    if (m_activeListeners == null) {
+                        activeListeners = m_listeners.toArray(new LogChangeListener[0]);
+                        m_activeListeners = activeListeners;
+                    }
                 }
             }
+            for (LogChangeListener listener : activeListeners) {
+                listener.onLogChanged();
+            }
         }
-        for (LogChangeListener listener : activeListeners)
-        {
+        else {
+            if (confirmClearing()) {
+                deleteOldEntry();
+                Logger.debug("Очень новая строка");
+            }
+        }
+    }
+
+    public void deleteOldEntry()
+    {
+        m_messages.remove(1);
+        LogChangeListener[] activeListeners = m_activeListeners;
+
+        for (LogChangeListener listener : activeListeners) {
+            listener.onLogChanged();
+        }
+    }
+
+    public void reset()
+    {
+        m_messages.clear();
+        LogChangeListener[] activeListeners = m_activeListeners;
+
+        for (LogChangeListener listener : activeListeners) {
             listener.onLogChanged();
         }
     }

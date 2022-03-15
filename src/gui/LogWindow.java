@@ -11,6 +11,8 @@ import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
 
+import static gui.WindowsConst.*;
+
 public class LogWindow extends JInternalFrame implements LogChangeListener
 {
     private LogWindowSource m_logSource;
@@ -21,14 +23,18 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
         super("Протокол работы", true, true, true, true);
         m_logSource = logSource;
         m_logSource.registerListener(this);
-        m_logContent = new TextArea("");
-        m_logContent.setSize(200, 500);
+        var textArea = new TextArea("");
+        textArea.setEditable(false);
+        m_logContent = textArea;
+        m_logContent.setSize(logContentWidth, logContentHeight);
+        setName("LogWindow");
         
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);
         getContentPane().add(panel);
         pack();
         updateLogContent();
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
     private void updateLogContent()
