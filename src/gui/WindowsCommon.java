@@ -7,22 +7,18 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayDeque;
 
 public abstract class WindowsCommon {
+    public static ArrayDeque<WindowConfiguration> configs = new ArrayDeque<>();
+
     static void exitWindow(Component window) {
         if (window instanceof JInternalFrame) {
             ((JInternalFrame) window).addInternalFrameListener(new InternalFrameAdapter() {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
-                        var iconState = e.getInternalFrame().isIcon();
-                        var windowLocation = e.getInternalFrame().getLocation();
-                        var windowSize = e.getInternalFrame().getSize();
-                        var name = e.getInternalFrame().getName();
-                        var windowLocationConfig = new GameWindowConfiguration(windowLocation.x, windowLocation.y, windowSize.width, windowSize.height, iconState, name);
-                        writeConfig(windowLocationConfig);
+                        configs.add(setConfig(e));
                     }
                 }
             });
@@ -31,6 +27,8 @@ public abstract class WindowsCommon {
                 public void windowClosing(WindowEvent e) {
                     if (confirmClosing(e.getWindow())) {
                         e.getWindow().setVisible(false);
+                        configs.add(setConfig(e));
+                        writeConfig(configs);
                         System.exit(0);
                     }
                 }
@@ -38,16 +36,15 @@ public abstract class WindowsCommon {
         }
     }
 
-    public static void writeConfig(GameWindowConfiguration config) {
+    public static void writeConfig(ArrayDeque<WindowConfiguration> configs) {
         File file = new File(System.getProperty("user.home"), "data.bin");
-        var append = Files.exists(Path.of(System.getProperty("user.home"), "data.bin"));
         try {
-            OutputStream os = new FileOutputStream(file, append);
+            OutputStream os = new FileOutputStream(file);
             try {
                 ObjectOutputStream oos =
                         new ObjectOutputStream(new BufferedOutputStream(os));
                 try {
-                    oos.writeObject(config);
+                    oos.writeObject(configs);
                     oos.flush();
                 } finally {
                     oos.close();
@@ -55,25 +52,26 @@ public abstract class WindowsCommon {
             } finally {
                 os.close();
             }
-//            InputStream is = new FileInputStream(file);
-//            try {
-//                ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(is));
-//                try {
-//                    GameWindowConfiguration restored = (GameWindowConfiguration) ois.readObject();
-//                    System.out.println(restored.getLocationX() + ": " + restored.getLocationY() + restored.getName());
-//                    boolean bSame = (config == restored);
-//                    System.out.println("Same object: " + bSame);
-//                } catch (ClassNotFoundException ex) {
-//                    ex.printStackTrace();
-//                } finally {
-//                    ois.close();
-//                }
-//            } finally {
-//                is.close();
-//            }
+            InputStream is = new FileInputStream(file);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    static WindowConfiguration setConfig(InternalFrameEvent e) {
+        var iconState = e.getInternalFrame().isIcon();
+        var windowLocation = e.getInternalFrame().getLocation();
+        var windowSize = e.getInternalFrame().getSize();
+        var name = e.getInternalFrame().getName();
+        return new WindowConfiguration(windowLocation.x, windowLocation.y, windowSize.width, windowSize.height, iconState, name);
+    }
+
+    static WindowConfiguration setConfig(WindowEvent e) {
+        var iconState = ((JFrame) e.getWindow()).getState();
+        var windowLocation = e.getWindow().getLocation();
+        var windowSize = e.getWindow().getSize();
+        var name = e.getWindow().getName();
+        return new WindowConfiguration(windowLocation.x, windowLocation.y, windowSize.width, windowSize.height, iconState, name);
     }
 
     static boolean confirmClosing(Component window) {
