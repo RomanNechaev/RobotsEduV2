@@ -28,6 +28,6 @@ public class RobotsProgram
         }
         frame.pack();
         frame.setVisible(true);
-        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        //frame.setExtendedState(Frame.MAXIMIZED_BOTH);
       });
     }}
