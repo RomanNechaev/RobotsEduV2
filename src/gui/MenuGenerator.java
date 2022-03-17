@@ -12,6 +12,7 @@ public class MenuGenerator extends JMenuBar {
         add(createLookParagraph());
         add(createTestParagraph());
         add(createCloseParagraph());
+        add(closingParagraph());
     }
 
     private JMenu createLookParagraph() {
@@ -55,6 +56,29 @@ public class MenuGenerator extends JMenuBar {
             JMenuItem addLogMessageItem = new JMenuItem("Удалить старую запись", KeyEvent.VK_S);
             addLogMessageItem.addActionListener((event) -> Logger.debugDelete());
             testMenu.add(addLogMessageItem);
+        }
+        return testMenu;
+    }
+
+    private JMenu closingParagraph() {
+        JMenu testMenu = new JMenu("Опции");
+        testMenu.setMnemonic(KeyEvent.VK_T);
+        testMenu.getAccessibleContext().setAccessibleDescription(
+                "Тестовые команды");
+
+        {
+            JMenuItem closeButton = new JMenuItem("Выход");
+            closeButton.setMnemonic(KeyEvent.VK_Q);
+            closeButton.setContentAreaFilled(false);
+            closeButton.getAccessibleContext().setAccessibleDescription("Выход из программы");
+            closeButton.addActionListener(e -> {
+                Window window = SwingUtilities.windowForComponent((JButton) e.getSource());
+                window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+            });
+
+            closeButton.addActionListener((event) -> Logger.debug("Новая строка"));
+            testMenu.add(closeButton);
+
         }
         return testMenu;
     }

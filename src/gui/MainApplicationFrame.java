@@ -20,7 +20,7 @@ public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
 
     public MainApplicationFrame(Robot robot) throws IOException, ClassNotFoundException {
-
+        RobotConfig cnf = new RobotConfig(robot);
         int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset,
@@ -32,22 +32,20 @@ public class MainApplicationFrame extends JFrame {
         setName("MainWindow");
 
 
-
         LogWindow logWindow = createLogWindow();
         GameWindow gameWindow = createGameWindow(robot);
 
-        if (Files.exists(Path.of(System.getProperty("user.home"), "data.bin")))
-            restoreConfiguration(logWindow, gameWindow);
+      if (Files.exists(Path.of(System.getProperty("user.home"), "data.bin")))
+        restoreConfiguration(logWindow, gameWindow);
 
 
         addWindow(logWindow);
         addWindow(gameWindow);
 
 
-        exitWindow(gameWindow);
-        exitWindow(logWindow);
-        exitWindow(MainApplicationFrame.this);
-
+        exitWindow(gameWindow, cnf);
+        exitWindow(logWindow, cnf);
+        exitWindow(MainApplicationFrame.this, cnf);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
@@ -87,7 +85,7 @@ public class MainApplicationFrame extends JFrame {
         ObjectInputStream objectInputStream = null;
         try {
             objectInputStream = new ObjectInputStream(
-                    new FileInputStream(System.getProperty("user.home") + "\\" + "data.bin"));
+                    new FileInputStream(System.getProperty("user.home") + "/" + "data.bin"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -19,6 +19,10 @@ public class WindowConfiguration implements Serializable {
         m_iconState = iconState;
         m_name = name;
     }
+    public WindowConfiguration()
+    {
+
+    }
 
     public WindowConfiguration(int gameWindowLocationX, int gameWindowLocationY, int gameWindowWidth, int gameWindowHeight, Integer iconNumber, String name) {
         m_gameWindowLocationX = gameWindowLocationX;

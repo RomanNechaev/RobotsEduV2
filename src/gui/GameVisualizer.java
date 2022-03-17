@@ -18,7 +18,7 @@ import static logic.MathOperations.round;
 
 public class GameVisualizer extends JPanel implements RobotObserver
 {
-    private final Robot robot;
+    private final Robot robot ;
     private static Timer initTimer()
     {
         return new Timer("events generator", true);

@@ -1,5 +1,7 @@
 package gui;
 
+import logic.Robot;
+
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -12,12 +14,13 @@ import java.util.ArrayDeque;
 public abstract class WindowsCommon {
     public static ArrayDeque<WindowConfiguration> configs = new ArrayDeque<>();
 
-    static void exitWindow(Component window) {
+    static void exitWindow(Component window, RobotConfig cnf) {
         if (window instanceof JInternalFrame) {
             ((JInternalFrame) window).addInternalFrameListener(new InternalFrameAdapter() {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
+                        System.out.println(cnf.getRobotX());
                         configs.add(setConfig(e));
                     }
                 }

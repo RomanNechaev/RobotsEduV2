@@ -15,6 +15,7 @@ public class GameWindow extends JInternalFrame
         m_visualizer = new GameVisualizer(robot);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer, BorderLayout.CENTER);
+        setName("GameWindow");
         getContentPane().add(panel);
         pack();
     }

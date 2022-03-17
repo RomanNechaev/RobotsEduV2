@@ -1,5 +1,7 @@
 package logic;
 import gui.RobotObserver;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -8,10 +10,12 @@ import java.util.TimerTask;
 import static logic.MathOperations.*;
 import static logic.Const.*;
 
-public class Robot {
+public class Robot implements Serializable {
+    //десериализация
+    //начальные значения
     private double x = 100;
     private double y = 100;
-    private double direction = 0;
+    private transient double direction = 0;
 
     private List<RobotObserver> observers = new ArrayList<>();
 
