@@ -3,15 +3,15 @@ package gui;
 import log.Logger;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 
 public class MenuGenerator extends JMenuBar {
-    public MenuGenerator() {
+    private final JFrame jframe;
+    public MenuGenerator(JFrame jframe) {
+        this.jframe = jframe;
         add(createLookParagraph());
         add(createTestParagraph());
-        add(createCloseParagraph());
         add(closingParagraph());
     }
 
@@ -64,35 +64,15 @@ public class MenuGenerator extends JMenuBar {
         JMenu testMenu = new JMenu("Опции");
         testMenu.setMnemonic(KeyEvent.VK_T);
         testMenu.getAccessibleContext().setAccessibleDescription(
-                "Тестовые команды");
-
+                "Опциональные команды");
         {
-            JMenuItem closeButton = new JMenuItem("Выход");
-            closeButton.setMnemonic(KeyEvent.VK_Q);
-            closeButton.setContentAreaFilled(false);
-            closeButton.getAccessibleContext().setAccessibleDescription("Выход из программы");
-            closeButton.addActionListener(e -> {
-                Window window = SwingUtilities.windowForComponent((JButton) e.getSource());
-                window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
-            });
-
-            closeButton.addActionListener((event) -> Logger.debug("Новая строка"));
-            testMenu.add(closeButton);
+            JMenuItem addLogMessageItem = new JMenuItem("Выход", KeyEvent.VK_Q);
+            addLogMessageItem.addActionListener((event) ->
+                    jframe.dispatchEvent(new WindowEvent(jframe, WindowEvent.WINDOW_CLOSING)));
+            testMenu.add(addLogMessageItem);
 
         }
         return testMenu;
-    }
-
-    private JButton createCloseParagraph() {
-        JButton closeButton = new JButton("Выход");
-        closeButton.setMnemonic(KeyEvent.VK_Q);
-        closeButton.setContentAreaFilled(false);
-        closeButton.getAccessibleContext().setAccessibleDescription("Выход из программы");
-        closeButton.addActionListener(e -> {
-            Window window = SwingUtilities.windowForComponent((JButton) e.getSource());
-            window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
-        });
-        return closeButton;
     }
 
     private void setLookAndFeel(String className) {
@@ -101,6 +81,7 @@ public class MenuGenerator extends JMenuBar {
             SwingUtilities.updateComponentTreeUI(this);
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
         }
     }
 }
