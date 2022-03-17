@@ -1,5 +1,6 @@
 package gui;
 
+import logic.Const;
 import logic.Robot;
 
 import javax.swing.*;
@@ -14,14 +15,16 @@ import java.util.ArrayDeque;
 public abstract class WindowsCommon {
     public static ArrayDeque<WindowConfiguration> configs = new ArrayDeque<>();
 
-    static void exitWindow(Component window, RobotConfig cnf) {
+    static void exitWindow(Component window, RobotConfig cfg) {
         if (window instanceof JInternalFrame) {
             ((JInternalFrame) window).addInternalFrameListener(new InternalFrameAdapter() {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
-                        System.out.println(cnf.getRobotX());
+                        if ("GameWindow".equals(e.getInternalFrame().getName()) && cfg.getRobotX()!= Const.startX && cfg.getRobotY()!=Const.startY)
+                            writeConfig(cfg);
                         configs.add(setConfig(e));
+                        System.out.println(cfg.getRobotX());
                     }
                 }
             });
@@ -55,7 +58,27 @@ public abstract class WindowsCommon {
             } finally {
                 os.close();
             }
-            InputStream is = new FileInputStream(file);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void writeConfig(RobotConfig config) {
+        File file = new File(System.getProperty("user.home"), "robot.bin");
+        try {
+            OutputStream os = new FileOutputStream(file);
+            try {
+                ObjectOutputStream oos =
+                        new ObjectOutputStream(new BufferedOutputStream(os));
+                try {
+                    oos.writeObject(config);
+                    oos.flush();
+                } finally {
+                    oos.close();
+                }
+            } finally {
+                os.close();
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

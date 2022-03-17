@@ -20,6 +20,7 @@ public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
 
     public MainApplicationFrame(Robot robot) throws IOException, ClassNotFoundException {
+        //RobotConfig cnf = new RobotConfig(robot);
         RobotConfig cnf = new RobotConfig(robot);
         int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -34,13 +35,15 @@ public class MainApplicationFrame extends JFrame {
 
         LogWindow logWindow = createLogWindow();
         GameWindow gameWindow = createGameWindow(robot);
-
       if (Files.exists(Path.of(System.getProperty("user.home"), "data.bin")))
-        restoreConfiguration(logWindow, gameWindow);
-
+      {
+          robot.restoreConfig();
+          restoreConfiguration(logWindow, gameWindow);
+      }
 
         addWindow(logWindow);
         addWindow(gameWindow);
+
 
 
         exitWindow(gameWindow, cnf);
@@ -76,6 +79,7 @@ public class MainApplicationFrame extends JFrame {
                     MainApplicationFrame.this.setState(config.getIconNumber());
                     MainApplicationFrame.this.setLocation(config.getLocationX(), config.getLocationY());
                     MainApplicationFrame.this.desktopPane.setSize(config.getWindowWidth(), config.getWindowHeight());
+                    MainApplicationFrame.this.setSize(config.getWindowWidth(), config.getWindowHeight());
                 }
             }
         }

@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class RobotConfig implements Serializable, RobotObserver {
     private static double robotX;
     private static double robotY;
-    private final Robot robot ;
+    public final Robot robot ;
     public RobotConfig(Robot robot){
         this.robot = robot;
         robot.subscribe(this);
@@ -21,7 +21,7 @@ public class RobotConfig implements Serializable, RobotObserver {
     public double getRobotX() {
         return robotX;
     }
-    public static double getRobotY() {
+    public double getRobotY() {
         return robotY;
     }
 }

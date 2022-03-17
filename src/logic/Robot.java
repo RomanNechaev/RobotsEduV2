@@ -1,11 +1,14 @@
 package logic;
-import gui.RobotObserver;
 
+import gui.RobotConfig;
+import gui.RobotObserver;
+import gui.WindowConfiguration;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static logic.MathOperations.*;
 import static logic.Const.*;
@@ -13,9 +16,9 @@ import static logic.Const.*;
 public class Robot implements Serializable {
     //десериализация
     //начальные значения
-    private double x = 100;
-    private double y = 100;
-    private transient double direction = 0;
+    private double x = startX;
+    private double y = startY;
+    private double direction = 0;
 
     private List<RobotObserver> observers = new ArrayList<>();
 
@@ -28,7 +31,7 @@ public class Robot implements Serializable {
         double angularVelocity = calculateAngularVelocity(angleToTarget, direction, maxAngularVelocity);
         double velocity = 0;
 
-        if(angularVelocity == 0)
+        if (angularVelocity == 0)
             velocity = maxVelocity;
 
         double duration = 10;
@@ -55,5 +58,20 @@ public class Robot implements Serializable {
 
     public double getDirection() {
         return direction;
+    }
+
+    public void restoreConfig() throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInputStream = null;
+        try {
+            objectInputStream = new ObjectInputStream(
+                    new FileInputStream(System.getProperty("user.home") + "/" + "robot.bin"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        var config = (RobotConfig) objectInputStream.readObject();
+        objectInputStream.close();
+        var t =
+                x = config.robot.getX();
+        y = config.robot.getY();
     }
 }
