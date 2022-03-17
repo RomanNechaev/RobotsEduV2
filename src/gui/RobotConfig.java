@@ -7,9 +7,8 @@ import java.io.Serializable;
 public class RobotConfig implements Serializable, RobotObserver {
     private static double robotX;
     private static double robotY;
-    private final Robot robot ;
+
     public RobotConfig(Robot robot){
-        this.robot = robot;
         robot.subscribe(this);
     }
     @Override

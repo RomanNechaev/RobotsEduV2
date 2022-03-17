@@ -28,7 +28,7 @@ public class MainApplicationFrame extends JFrame {
                 screenSize.height - inset * 2);
 
         setContentPane(desktopPane);
-        setJMenuBar(new gui.MenuGenerator());
+        setJMenuBar(new gui.MenuGenerator(MainApplicationFrame.this));
         setName("MainWindow");
 
 
