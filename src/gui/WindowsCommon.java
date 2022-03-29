@@ -1,7 +1,9 @@
 package gui;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import logic.Const;
-import logic.Robot;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
@@ -10,10 +12,10 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.util.ArrayDeque;
 
 public abstract class WindowsCommon {
-    public static ArrayDeque<WindowConfiguration> configs = new ArrayDeque<>();
+    public static ArrayNode result = JsonNodeFactory.instance.arrayNode();
+    public static ObjectMapper mapper = new ObjectMapper();
 
     static void exitWindow(Component window, RobotConfig cfg) {
         if (window instanceof JInternalFrame) {
@@ -21,10 +23,10 @@ public abstract class WindowsCommon {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
-                        if ("GameWindow".equals(e.getInternalFrame().getName()) && cfg.getRobotX()!= Const.startX && cfg.getRobotY()!=Const.startY)
+                        if ("GameWindow".equals(e.getInternalFrame().getName()) && cfg.getX() != Const.startX && cfg.getY() != Const.startY)
                             writeConfig(cfg);
-                        configs.add(setConfig(e));
-                        System.out.println(cfg.getRobotX());
+                        var jsnConfig = mapper.valueToTree(setConfig(e));
+                        result.add(jsnConfig);
                     }
                 }
             });
@@ -33,8 +35,9 @@ public abstract class WindowsCommon {
                 public void windowClosing(WindowEvent e) {
                     if (confirmClosing(e.getWindow())) {
                         e.getWindow().setVisible(false);
-                        configs.add(setConfig(e));
-                        writeConfig(configs);
+                        var t = mapper.valueToTree(setConfig(e));
+                        result.add(t);
+                        writeConfig(result);
                         System.exit(0);
                     }
                 }
@@ -42,43 +45,22 @@ public abstract class WindowsCommon {
         }
     }
 
-    public static void writeConfig(ArrayDeque<WindowConfiguration> configs) {
+    public static void writeConfig(ArrayNode result) {
         File file = new File(System.getProperty("user.home"), "data.bin");
-        try {
-            OutputStream os = new FileOutputStream(file);
-            try {
-                ObjectOutputStream oos =
-                        new ObjectOutputStream(new BufferedOutputStream(os));
-                try {
-                    oos.writeObject(configs);
-                    oos.flush();
-                } finally {
-                    oos.close();
-                }
-            } finally {
-                os.close();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
+            writter.write(result.toString());
+            writter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public static void writeConfig(RobotConfig config) {
         File file = new File(System.getProperty("user.home"), "robot.bin");
-        try {
-            OutputStream os = new FileOutputStream(file);
-            try {
-                ObjectOutputStream oos =
-                        new ObjectOutputStream(new BufferedOutputStream(os));
-                try {
-                    oos.writeObject(config);
-                    oos.flush();
-                } finally {
-                    oos.close();
-                }
-            } finally {
-                os.close();
-            }
+        var jsnConfig = mapper.valueToTree(config);
+        try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
+            writter.write(jsnConfig.toString());
+            writter.flush();
         } catch (IOException ex) {
             ex.printStackTrace();
         }

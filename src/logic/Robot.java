@@ -1,12 +1,6 @@
 package logic;
 
-import gui.RobotConfig;
 import gui.RobotObserver;
-import gui.WindowConfiguration;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -35,8 +29,8 @@ public class Robot implements Serializable {
             velocity = maxVelocity;
 
         double duration = 10;
-        x = calculateNewX(x, velocity, angularVelocity, duration, direction);
-        y = calculateNewY(y, velocity, angularVelocity, duration, direction);
+        x = recalculateX(x, velocity, angularVelocity, duration, direction);
+        y = recalculateY(y, velocity, angularVelocity, duration, direction);
         direction = asNormalizedRadians(direction + angularVelocity * duration);
 
         for (RobotObserver observer : observers) {
@@ -56,22 +50,21 @@ public class Robot implements Serializable {
         return y;
     }
 
-    public double getDirection() {
-        return direction;
+    public void setX(double x)
+    {
+        this.x = x;
     }
 
-    public void restoreConfig() throws IOException, ClassNotFoundException {
-        ObjectInputStream objectInputStream = null;
-        try {
-            objectInputStream = new ObjectInputStream(
-                    new FileInputStream(System.getProperty("user.home") + "/" + "robot.bin"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        var config = (RobotConfig) objectInputStream.readObject();
-        objectInputStream.close();
-        var t =
-                x = config.robot.getX();
-        y = config.robot.getY();
+    public void setY(double y)
+    {
+        this.y = y;
+    }
+
+    public void setDirection(double direction)
+    {
+        this.direction = direction;
+    }
+    public double getDirection() {
+        return direction;
     }
 }

@@ -57,7 +57,7 @@ public class MathOperations {
         return velocity;
     }
 
-    public static double calculateNewX(double x, double velocity, double angularVelocity, double duration, double direction) {
+    public static double recalculateX(double x, double velocity, double angularVelocity, double duration, double direction) {
         double newX = x + velocity / angularVelocity *
                 (Math.sin(direction + angularVelocity * duration) - Math.sin(direction));
         if (!Double.isFinite(newX)) {
@@ -66,7 +66,7 @@ public class MathOperations {
         return newX;
     }
 
-    public static double calculateNewY(double y, double velocity, double angularVelocity, double duration, double direction) {
+    public static double recalculateY(double y, double velocity, double angularVelocity, double duration, double direction) {
         double newY = y - velocity / angularVelocity *
                 (Math.cos(direction + angularVelocity * duration) - Math.cos(direction));
         if (!Double.isFinite(newY)) {
