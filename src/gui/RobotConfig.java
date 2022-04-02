@@ -33,4 +33,10 @@ public class RobotConfig implements Serializable, RobotObserver {
     public double getDirectionR() {
         return directionR;
     }
+
+    @Override
+    public String toString()
+    {
+        return "X:" + robotX +"\s" + "Y:"+ robotY + "\s" + "Direction:" + directionR;
+    }
 }

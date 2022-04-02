@@ -5,9 +5,9 @@ import java.beans.PropertyVetoException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import javax.swing.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import logic.Robot;
 import log.Logger;
 
@@ -32,7 +32,7 @@ public class MainApplicationFrame extends JFrame {
 
         LogWindow logWindow = createLogWindow();
         GameWindow gameWindow = createGameWindow(robot);
-        if (Files.exists(Path.of(System.getProperty("user.home"), "data.bin"))) {
+        if (Files.exists(Path.of(System.getProperty("user.home"), "data.out"))) {
             restoreConfiguration(logWindow, gameWindow);
         }
         if (Files.exists(Path.of(System.getProperty("user.home"), "robot.bin"))) {
@@ -49,50 +49,69 @@ public class MainApplicationFrame extends JFrame {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
-    private void restoreConfiguration(LogWindow logWindow, GameWindow gameWindow) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.home") + "/" + "data.bin"))) {
-            ObjectMapper mapper = new ObjectMapper();
-            WindowConfiguration[] configs = mapper.readValue(reader, WindowConfiguration[].class);
-            for (WindowConfiguration config : configs) {
-                switch (config.getName()) {
-                    case "GameWindow" -> {
-                        try {
-                            gameWindow.setIcon(config.getIconState());
-                        } catch (PropertyVetoException e) {
-                            e.printStackTrace();
-                        }
-                        gameWindow.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
-                        gameWindow.setSize(config.getWindowWidth(), config.getWindowHeight());
+    private void restoreConfiguration(LogWindow logWindow, GameWindow gameWindow) {
+        var configs = restoreConfig();
+        while (!configs.isEmpty()) {
+            WindowConfiguration config = configs.pollLast();
+            switch (config.getName()) {
+                case "GameWindow" -> {
+                    try {
+                        gameWindow.setIcon(config.getIconState());
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
                     }
-                    case "LogWindow" -> {
-                        try {
-                            logWindow.setIcon(config.getIconState());
-                        } catch (PropertyVetoException e) {
-                            e.printStackTrace();
-                        }
-                        logWindow.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
-                        logWindow.setSize(config.getWindowWidth(), config.getWindowHeight());
+                    gameWindow.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
+                    gameWindow.setSize(config.getWindowWidth(), config.getWindowHeight());
+                }
+                case "LogWindow" -> {
+                    try {
+                        logWindow.setIcon(config.getIconState());
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
                     }
-                    case "MainWindow" -> {
-                        MainApplicationFrame.this.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
-                        MainApplicationFrame.this.setState(config.getIconNumber());
-                        MainApplicationFrame.this.desktopPane.setSize(config.getWindowWidth(), config.getWindowHeight());
-                        MainApplicationFrame.this.setSize(config.getWindowWidth(), config.getWindowHeight());
-                    }
+                    logWindow.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
+                    logWindow.setSize(config.getWindowWidth(), config.getWindowHeight());
+                }
+                case "MainWindow" -> {
+                    MainApplicationFrame.this.setState(config.getIconNumber());
+                    MainApplicationFrame.this.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
+                    MainApplicationFrame.this.desktopPane.setSize(config.getWindowWidth(), config.getWindowHeight());
+                    MainApplicationFrame.this.setSize(config.getWindowWidth(), config.getWindowHeight());
                 }
             }
-
         }
     }
 
-    public void restoreConfig(Robot r) throws IOException {
+    public void restoreConfig(Robot r) {
         try (BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.home") + "/" + "robot.bin"))) {
-            ObjectMapper mapper = new ObjectMapper();
-            var config = mapper.readTree(reader);
-            r.setX(config.get("x").asDouble());
-            r.setY(config.get("y").asDouble());
-            r.setDirection(config.get("directionR").asDouble());
+            var config = reader.readLine().split("\s");
+            r.setX(Double.parseDouble(config[0].split(":")[1]));
+            r.setY(Double.parseDouble(config[1].split(":")[1]));
+            r.setDirection(Double.parseDouble(config[2].split(":")[1]));
         }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static ArrayDeque<WindowConfiguration> restoreConfig() {
+        var configs = new ArrayDeque<WindowConfiguration>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.home") + "/" + "data.out"))) {
+            var line = reader.readLine().split(",");
+            for (String s : line) {
+                var tas = s.split("\s");
+                configs.add(new WindowConfiguration(Integer.parseInt(tas[0].split(":")[1]),
+                        Integer.parseInt(tas[1].split(":")[1]),
+                        Integer.parseInt(tas[2].split(":")[1]),
+                        Integer.parseInt(tas[3].split(":")[1]),
+                        Boolean.parseBoolean(tas[4].split(":")[1])
+                        , tas[5].split(":")[1]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return configs;
     }
 
     protected GameWindow createGameWindow(Robot robot) {

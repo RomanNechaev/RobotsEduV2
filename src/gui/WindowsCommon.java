@@ -1,8 +1,5 @@
 package gui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import logic.Const;
 
 import javax.swing.*;
@@ -12,10 +9,10 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.util.ArrayDeque;
 
 public abstract class WindowsCommon {
-    public static ArrayNode result = JsonNodeFactory.instance.arrayNode();
-    public static ObjectMapper mapper = new ObjectMapper();
+    public static ArrayDeque<WindowConfiguration> configs = new ArrayDeque<>();
 
     static void exitWindow(Component window, RobotConfig cfg) {
         if (window instanceof JInternalFrame) {
@@ -25,8 +22,7 @@ public abstract class WindowsCommon {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
                         if ("GameWindow".equals(e.getInternalFrame().getName()) && cfg.getX() != Const.startX && cfg.getY() != Const.startY)
                             writeConfig(cfg);
-                        var jsnConfig = mapper.valueToTree(setConfig(e));
-                        result.add(jsnConfig);
+                        configs.add(setConfig(e));
                     }
                 }
             });
@@ -35,9 +31,8 @@ public abstract class WindowsCommon {
                 public void windowClosing(WindowEvent e) {
                     if (confirmClosing(e.getWindow())) {
                         e.getWindow().setVisible(false);
-                        var t = mapper.valueToTree(setConfig(e));
-                        result.add(t);
-                        writeConfig(result);
+                        configs.add(setConfig(e));
+                        writeConfig(configs);
                         System.exit(0);
                     }
                 }
@@ -45,21 +40,23 @@ public abstract class WindowsCommon {
         }
     }
 
-    public static void writeConfig(ArrayNode result) {
-        File file = new File(System.getProperty("user.home"), "data.bin");
+    public static void writeConfig(ArrayDeque<WindowConfiguration> configs) {
+        File file = new File(System.getProperty("user.home"), "data.out");
         try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
-            writter.write(result.toString());
-            writter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+            while(!configs.isEmpty()) {
+                var config = configs.pollLast();
+                writter.write(config.toString()+",");
+                writter.flush();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
     public static void writeConfig(RobotConfig config) {
         File file = new File(System.getProperty("user.home"), "robot.bin");
-        var jsnConfig = mapper.valueToTree(config);
         try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
-            writter.write(jsnConfig.toString());
+            writter.write(config.toString());
             writter.flush();
         } catch (IOException ex) {
             ex.printStackTrace();

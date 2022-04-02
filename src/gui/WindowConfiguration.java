@@ -1,10 +1,8 @@
 package gui;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.io.Serializable;
 
-@JsonAutoDetect
 public class WindowConfiguration implements Serializable {
     private int windowLocationX;
     private int windowLocationY;
@@ -34,6 +32,17 @@ public class WindowConfiguration implements Serializable {
         this.windowHeight = windowHeight;
         this.name = name;
         this.iconNumber = iconNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "windowLocationX:" + windowLocationX + "\s"
+                + "windowLocationY:" + windowLocationY + "\s"
+                + "windowWidth:" + windowWidth + "\s"
+                + "windowHeight:" + windowHeight + "\s"
+                + "iconState:" + iconState + "\s"
+                + "name:" + name + "\s"
+                + "iconNumber:" + iconNumber;
     }
 
 

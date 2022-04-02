@@ -1,6 +1,7 @@
 package logic;
 
 import gui.RobotObserver;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -50,21 +51,26 @@ public class Robot implements Serializable {
         return y;
     }
 
-    public void setX(double x)
-    {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(double y)
-    {
+    public void setY(double y) {
         this.y = y;
     }
 
-    public void setDirection(double direction)
-    {
+    public void setDirection(double direction) {
         this.direction = direction;
     }
+
     public double getDirection() {
         return direction;
+    }
+
+    @Override
+    public String toString() {
+        return "Robot{" + "x:" + x
+                + "y:" + y
+                + "direction:" + direction + "}";
     }
 }
