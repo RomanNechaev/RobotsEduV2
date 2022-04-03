@@ -1,6 +1,6 @@
 package logic;
 
-import gui.RobotObserver;
+import gui.state.RobotObserver;
 
 import java.io.Serializable;
 import java.util.*;
@@ -9,8 +9,6 @@ import static logic.MathOperations.*;
 import static logic.Const.*;
 
 public class Robot implements Serializable {
-    //десериализация
-    //начальные значения
     private double x = startX;
     private double y = startY;
     private double direction = 0;

@@ -1,6 +1,7 @@
 package gui;
 
-import logic.Const;
+import gui.state.RobotConfig;
+import gui.state.WindowConfiguration;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
@@ -12,17 +13,15 @@ import java.io.*;
 import java.util.ArrayDeque;
 
 public abstract class WindowsCommon {
-    public static ArrayDeque<WindowConfiguration> configs = new ArrayDeque<>();
+    public static ArrayDeque<WindowConfiguration> windowConfigs = new ArrayDeque<>();
 
-    static void exitWindow(Component window, RobotConfig cfg) {
+    public static void exitWindow(Component window, RobotConfig robotConfig) {
         if (window instanceof JInternalFrame) {
             ((JInternalFrame) window).addInternalFrameListener(new InternalFrameAdapter() {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
-                        e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
-                        if ("GameWindow".equals(e.getInternalFrame().getName()) && cfg.getX() != Const.startX && cfg.getY() != Const.startY)
-                            writeConfig(cfg);
-                        configs.add(setConfig(e));
+                        e.getInternalFrame().setVisible(false);
+                        windowConfigs.add(setConfig(e));
                     }
                 }
             });
@@ -31,8 +30,10 @@ public abstract class WindowsCommon {
                 public void windowClosing(WindowEvent e) {
                     if (confirmClosing(e.getWindow())) {
                         e.getWindow().setVisible(false);
-                        configs.add(setConfig(e));
-                        writeConfig(configs);
+                        windowConfigs.add(setConfig(e));
+                        writeConfig(windowConfigs);
+                        writeConfig(robotConfig);
+                        e.getWindow().dispose();
                         System.exit(0);
                     }
                 }
@@ -42,11 +43,11 @@ public abstract class WindowsCommon {
 
     public static void writeConfig(ArrayDeque<WindowConfiguration> configs) {
         File file = new File(System.getProperty("user.home"), "data.out");
-        try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(file))) {
             while(!configs.isEmpty()) {
                 var config = configs.pollLast();
-                writter.write(config.toString()+",");
-                writter.flush();
+                buffWriter.write(config.toString() + ",");
+                buffWriter.flush();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -55,9 +56,9 @@ public abstract class WindowsCommon {
 
     public static void writeConfig(RobotConfig config) {
         File file = new File(System.getProperty("user.home"), "robot.bin");
-        try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
-            writter.write(config.toString());
-            writter.flush();
+        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(file))) {
+            buffWriter.write(config.toString());
+            buffWriter.flush();
         } catch (IOException ex) {
             ex.printStackTrace();
         }

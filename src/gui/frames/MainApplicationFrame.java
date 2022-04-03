@@ -1,4 +1,4 @@
-package gui;
+package gui.frames;
 
 import java.awt.*;
 import java.beans.PropertyVetoException;
@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import javax.swing.*;
 
+import gui.state.RobotConfig;
+import gui.state.WindowConfiguration;
 import logic.Robot;
 import log.Logger;
 
@@ -26,7 +28,7 @@ public class MainApplicationFrame extends JFrame {
                 screenSize.height - inset * 2);
 
         setContentPane(desktopPane);
-        setJMenuBar(new gui.MenuGenerator(MainApplicationFrame.this));
+        setJMenuBar(new gui.menu.MenuGenerator(MainApplicationFrame.this));
         setName("MainWindow");
 
 

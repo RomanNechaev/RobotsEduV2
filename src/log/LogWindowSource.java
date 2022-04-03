@@ -1,6 +1,5 @@
 package log;
 
-import gui.WindowsCommon;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -8,49 +7,49 @@ import static gui.WindowsCommon.*;
 
 public class LogWindowSource
 {
-    private int m_iQueueLength;
+    private int mIQueueLength;
 
-    private ArrayList<LogEntry> m_messages;
-    private final ArrayList<LogChangeListener> m_listeners;
-    private volatile LogChangeListener[] m_activeListeners;
+    private ArrayList<LogEntry> mMessages;
+    private final ArrayList<LogChangeListener> mListeners;
+    private volatile LogChangeListener[] mActiveListeners;
 
     public LogWindowSource(int iQueueLength)
     {
-        m_iQueueLength = iQueueLength;
-        m_messages = new ArrayList<LogEntry>(iQueueLength);
-        m_listeners = new ArrayList<LogChangeListener>();
+        mIQueueLength = iQueueLength;
+        mMessages = new ArrayList<LogEntry>(iQueueLength);
+        mListeners = new ArrayList<LogChangeListener>();
     }
 
     public void registerListener(LogChangeListener listener)
     {
-        synchronized(m_listeners)
+        synchronized(mListeners)
         {
-            m_listeners.add(listener);
-            m_activeListeners = null;
+            mListeners.add(listener);
+            mActiveListeners = null;
         }
     }
 
     public void unregisterListener(LogChangeListener listener)
     {
-        synchronized(m_listeners)
+        synchronized(mListeners)
         {
-            m_listeners.remove(listener);
-            m_activeListeners = null;
+            mListeners.remove(listener);
+            mActiveListeners = null;
         }
     }
 
     public void append(LogLevel logLevel, String strMessage)
     {
-        if(size() < m_iQueueLength) {
+        if(size() < mIQueueLength) {
             LogEntry entry = new LogEntry(logLevel, strMessage);
-            m_messages.add(entry);
-            LogChangeListener[] activeListeners = m_activeListeners;
+            mMessages.add(entry);
+            LogChangeListener[] activeListeners = mActiveListeners;
 
             if (activeListeners == null) {
-                synchronized (m_listeners) {
-                    if (m_activeListeners == null) {
-                        activeListeners = m_listeners.toArray(new LogChangeListener[0]);
-                        m_activeListeners = activeListeners;
+                synchronized (mListeners) {
+                    if (mActiveListeners == null) {
+                        activeListeners = mListeners.toArray(new LogChangeListener[0]);
+                        mActiveListeners = activeListeners;
                     }
                 }
             }
@@ -68,8 +67,8 @@ public class LogWindowSource
 
     public void deleteOldEntry()
     {
-        m_messages.remove(1);
-        LogChangeListener[] activeListeners = m_activeListeners;
+        mMessages.remove(0);
+        LogChangeListener[] activeListeners = mActiveListeners;
 
         for (LogChangeListener listener : activeListeners) {
             listener.onLogChanged();
@@ -78,8 +77,8 @@ public class LogWindowSource
 
     public void reset()
     {
-        m_messages.clear();
-        LogChangeListener[] activeListeners = m_activeListeners;
+        mMessages.clear();
+        LogChangeListener[] activeListeners = mActiveListeners;
 
         for (LogChangeListener listener : activeListeners) {
             listener.onLogChanged();
@@ -88,21 +87,21 @@ public class LogWindowSource
 
     public int size()
     {
-        return m_messages.size();
+        return mMessages.size();
     }
 
     public Iterable<LogEntry> range(int startFrom, int count)
     {
-        if (startFrom < 0 || startFrom >= m_messages.size())
+        if (startFrom < 0 || startFrom >= mMessages.size())
         {
             return Collections.emptyList();
         }
-        int indexTo = Math.min(startFrom + count, m_messages.size());
-        return m_messages.subList(startFrom, indexTo);
+        int indexTo = Math.min(startFrom + count, mMessages.size());
+        return mMessages.subList(startFrom, indexTo);
     }
 
     public Iterable<LogEntry> all()
     {
-        return m_messages;
+        return mMessages;
     }
 }

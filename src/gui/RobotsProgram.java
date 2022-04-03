@@ -1,5 +1,6 @@
 package gui;
 
+import gui.frames.MainApplicationFrame;
 import logic.Robot;
 
 import java.awt.Frame;
@@ -13,9 +14,6 @@ public class RobotsProgram {
         Robot robot = new Robot();
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-//        UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-//        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();
         }

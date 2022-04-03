@@ -1,5 +1,6 @@
-package gui;
+package gui.frames;
 
+import gui.state.RobotObserver;
 import logic.Robot;
 
 import java.awt.Color;
@@ -23,8 +24,8 @@ public class GameVisualizer extends JPanel implements RobotObserver
     {
         return new Timer("events generator", true);
     }
-    private volatile int m_targetPositionX = 150;
-    private volatile int m_targetPositionY = 100;
+    private volatile int mTargetPositionX = 150;
+    private volatile int mTargetPositionY = 100;
 
     public GameVisualizer(Robot robot)
     {
@@ -35,7 +36,7 @@ public class GameVisualizer extends JPanel implements RobotObserver
             @Override
             public void run()
             {
-                robot.move(m_targetPositionX, m_targetPositionY);
+                robot.move(mTargetPositionX, mTargetPositionY);
             }
         }, 0, 10);
         addMouseListener(new MouseAdapter()
@@ -44,7 +45,7 @@ public class GameVisualizer extends JPanel implements RobotObserver
             public void mouseClicked(MouseEvent e)
             {
                 setTargetPosition(e.getPoint());
-                robot.move(m_targetPositionX, m_targetPositionY);
+                robot.move(mTargetPositionX, mTargetPositionY);
                 repaint();
             }
         });
@@ -54,8 +55,8 @@ public class GameVisualizer extends JPanel implements RobotObserver
 
     protected void setTargetPosition(Point p)
     {
-        m_targetPositionX = p.x;
-        m_targetPositionY = p.y;
+        mTargetPositionX = p.x;
+        mTargetPositionY = p.y;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class GameVisualizer extends JPanel implements RobotObserver
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
         drawRobot(g2d, round(robot.getX()), round(robot.getY()), robot.getDirection());
-        drawTarget(g2d, m_targetPositionX, m_targetPositionY);
+        drawTarget(g2d, mTargetPositionX, mTargetPositionY);
     }
 
     public static void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
@@ -84,18 +85,18 @@ public class GameVisualizer extends JPanel implements RobotObserver
 
     private void drawRobot(Graphics2D g, int x, int y, double direction)
     {
-        int robotCenterX = round(x);
-        int robotCenterY = round(y);
-        AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
+        int centerX = round(x);
+        int centerY = round(y);
+        AffineTransform t = AffineTransform.getRotateInstance(direction, centerX, centerY);
         g.setTransform(t);
         g.setColor(Color.GREEN);
-        fillOval(g, robotCenterX, robotCenterY, 30, 10);
+        fillOval(g, centerX, centerY, 30, 10);
         g.setColor(Color.BLACK);
-        drawOval(g, robotCenterX, robotCenterY, 30, 10);
+        drawOval(g, centerX, centerY, 30, 10);
         g.setColor(Color.WHITE);
-        fillOval(g, robotCenterX  + 10, robotCenterY, 5, 5);
+        fillOval(g, centerX + 10, centerY, 5, 5);
         g.setColor(Color.BLACK);
-        drawOval(g, robotCenterX  + 10, robotCenterY, 5, 5);
+        drawOval(g, centerX + 10, centerY, 5, 5);
     }
 
     private void drawTarget(Graphics2D g, int x, int y)

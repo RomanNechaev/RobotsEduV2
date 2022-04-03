@@ -4,9 +4,6 @@ import java.util.function.Function;
 
 public class MathOperations {
 
-    /**
-     * normalizes, but in Polar coordinate system
-     */
     public static double angleTo(double fromX, double fromY, double toX, double toY, double direction)
     {
         double diffX = toX - fromX;

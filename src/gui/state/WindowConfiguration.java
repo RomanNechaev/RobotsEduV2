@@ -1,4 +1,4 @@
-package gui;
+package gui.state;
 
 
 import java.io.Serializable;
