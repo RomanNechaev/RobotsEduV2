@@ -1,6 +1,8 @@
 package gui;
 
-import logic.Const;
+import logic.RobotConst;
+import state.RobotConfig;
+import state.WindowConfiguration;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
@@ -20,7 +22,8 @@ public abstract class WindowsCommon {
                 public void internalFrameClosing(InternalFrameEvent e) {
                     if (confirmClosing(e.getInternalFrame())) {
                         e.getInternalFrame().getDesktopPane().getDesktopManager().closeFrame(e.getInternalFrame());
-                        if ("GameWindow".equals(e.getInternalFrame().getName()) && cfg.getX() != Const.startX && cfg.getY() != Const.startY)
+                        var windowName = e.getInternalFrame().getName();
+                        if ("GameWindow".equals(windowName) && cfg.getX() != RobotConst.startX && cfg.getY() != RobotConst.startY)
                             writeConfig(cfg);
                         configs.add(setConfig(e));
                     }
@@ -33,6 +36,7 @@ public abstract class WindowsCommon {
                         e.getWindow().setVisible(false);
                         configs.add(setConfig(e));
                         writeConfig(configs);
+                        e.getWindow().dispose();
                         System.exit(0);
                     }
                 }
@@ -43,9 +47,9 @@ public abstract class WindowsCommon {
     public static void writeConfig(ArrayDeque<WindowConfiguration> configs) {
         File file = new File(System.getProperty("user.home"), "data.out");
         try (BufferedWriter writter = new BufferedWriter(new FileWriter(file))) {
-            while(!configs.isEmpty()) {
+            while (!configs.isEmpty()) {
                 var config = configs.pollLast();
-                writter.write(config.toString()+",");
+                writter.write(config.toString() + ",");
                 writter.flush();
             }
         } catch (IOException ex) {

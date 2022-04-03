@@ -1,6 +1,7 @@
 package gui;
 
 import logic.Robot;
+import state.RobotObserver;
 
 import java.awt.Color;
 import java.awt.EventQueue;

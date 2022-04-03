@@ -1,12 +1,12 @@
 package logic;
 
-import gui.RobotObserver;
+import state.RobotObserver;
 
 import java.io.Serializable;
 import java.util.*;
 
 import static logic.MathOperations.*;
-import static logic.Const.*;
+import static logic.RobotConst.*;
 
 public class Robot implements Serializable {
     //десериализация

@@ -10,6 +10,8 @@ import javax.swing.*;
 
 import logic.Robot;
 import log.Logger;
+import state.RobotConfig;
+import state.WindowConfiguration;
 
 import static gui.WindowsCommon.*;
 import static gui.WindowsConst.*;
