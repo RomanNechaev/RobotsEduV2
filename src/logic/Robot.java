@@ -9,9 +9,9 @@ import static logic.MathOperations.*;
 import static logic.Const.*;
 
 public class Robot implements Serializable {
-    private double x = startX;
-    private double y = startY;
-    private double direction = 0;
+    private volatile double x = startX;
+    private volatile double y = startY;
+    private volatile double direction = 0;
 
     private List<RobotObserver> observers = new ArrayList<>();
 
@@ -28,9 +28,11 @@ public class Robot implements Serializable {
             velocity = maxVelocity;
 
         double duration = 10;
-        x = recalculateX(x, velocity, angularVelocity, duration, direction);
-        y = recalculateY(y, velocity, angularVelocity, duration, direction);
-        direction = asNormalizedRadians(direction + angularVelocity * duration);
+        synchronized (this) {
+            x = recalculateX(x, velocity, angularVelocity, duration, direction);
+            y = recalculateY(y, velocity, angularVelocity, duration, direction);
+            direction = asNormalizedRadians(direction + angularVelocity * duration);
+        }
 
         for (RobotObserver observer : observers) {
             observer.update(x, y, direction);

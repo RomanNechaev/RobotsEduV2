@@ -6,4 +6,7 @@ public class WindowsConst {
 
     public static final int logWindowWidth = 300;
     public static final int logWindowHeight = 800;
+
+    public static final int coordinatesWidth = 200;
+    public static final int coordinatesHeight = 100;
 }

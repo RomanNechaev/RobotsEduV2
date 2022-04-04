@@ -17,9 +17,8 @@ import javax.swing.JPanel;
 
 import static logic.MathOperations.round;
 
-public class GameVisualizer extends JPanel implements RobotObserver
-{
-    private final Robot robot ;
+public class GameVisualizer extends JPanel implements RobotObserver {
+    private final Robot robot;
     private static Timer initTimer()
     {
         return new Timer("events generator", true);
@@ -30,27 +29,23 @@ public class GameVisualizer extends JPanel implements RobotObserver
     public GameVisualizer(Robot robot)
     {
         this.robot = robot;
-        Timer m_timer = initTimer();
-        m_timer.schedule(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                robot.move(mTargetPositionX, mTargetPositionY);
-            }
-        }, 0, 10);
-        addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                setTargetPosition(e.getPoint());
-                robot.move(mTargetPositionX, mTargetPositionY);
-                repaint();
-            }
-        });
         setDoubleBuffered(true);
         robot.subscribe(this);
+        Timer m_timer = initTimer();
+        new Thread(() -> m_timer.schedule(new TimerTask() {
+            public void run() {
+                robot.move(mTargetPositionX, mTargetPositionY);
+            }
+        }, 0, 10)).start();
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    setTargetPosition(e.getPoint());
+                    robot.move(mTargetPositionX, mTargetPositionY);
+                    repaint();
+                }
+            });
     }
 
     protected void setTargetPosition(Point p)
@@ -61,7 +56,9 @@ public class GameVisualizer extends JPanel implements RobotObserver
 
     @Override
     public void update(double x, double y, double direction) {
-        EventQueue.invokeLater(this::repaint);
+        synchronized(robot) {
+            EventQueue.invokeLater(this::repaint);
+        }
     }
 
     @Override
