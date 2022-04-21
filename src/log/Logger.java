@@ -4,10 +4,10 @@ public final class Logger
 {
     private static final LogWindowSource defaultLogSource;
     static {
-        defaultLogSource = new LogWindowSource(100);
+        defaultLogSource = new LogWindowSource(LogConst.iQueueLength);
     }
-    
-    private Logger()
+
+    public Logger()
     {
     }
 
@@ -15,7 +15,12 @@ public final class Logger
     {
         defaultLogSource.append(LogLevel.Debug, strMessage);
     }
-    
+
+    public static void debugDelete()
+    {
+        defaultLogSource.deleteOldEntry();
+    }
+
     public static void error(String strMessage)
     {
         defaultLogSource.append(LogLevel.Error, strMessage);
