@@ -56,7 +56,7 @@ public class MainApplicationFrame extends JFrame {
         while (!configs.isEmpty()) {
             WindowConfiguration config = configs.pollLast();
             switch (config.getName()) {
-                case "GameWindow" -> {
+                case FramesNameConst.gameWindow -> {
                     try {
                         gameWindow.setIcon(config.getIconState());
                     } catch (PropertyVetoException e) {
@@ -65,7 +65,7 @@ public class MainApplicationFrame extends JFrame {
                     gameWindow.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
                     gameWindow.setSize(config.getWindowWidth(), config.getWindowHeight());
                 }
-                case "LogWindow" -> {
+                case FramesNameConst.logWindow -> {
                     try {
                         logWindow.setIcon(config.getIconState());
                     } catch (PropertyVetoException e) {
@@ -74,11 +74,11 @@ public class MainApplicationFrame extends JFrame {
                     logWindow.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
                     logWindow.setSize(config.getWindowWidth(), config.getWindowHeight());
                 }
-                case "MainWindow" -> {
-                    MainApplicationFrame.this.setState(config.getIconNumber());
-                    MainApplicationFrame.this.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
-                    MainApplicationFrame.this.desktopPane.setSize(config.getWindowWidth(), config.getWindowHeight());
-                    MainApplicationFrame.this.setSize(config.getWindowWidth(), config.getWindowHeight());
+                case FramesNameConst.mainWindow -> {
+                    this.setState(config.getIconNumber());
+                    this.setLocation(config.getWindowLocationX(), config.getWindowLocationY());
+                    this.desktopPane.setSize(config.getWindowWidth(), config.getWindowHeight());
+                    this.setSize(config.getWindowWidth(), config.getWindowHeight());
                 }
             }
         }
