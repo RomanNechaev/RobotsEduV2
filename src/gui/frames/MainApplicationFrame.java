@@ -3,9 +3,12 @@ package gui.frames;
 import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.swing.*;
 
 import gui.state.RobotConfig;
@@ -18,6 +21,7 @@ import static gui.WindowsConst.*;
 
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
+    public static ResourceBundle bundle = ResourceBundle.getBundle("text_ru", new Locale("ru", "RU"));
 
     public MainApplicationFrame(Robot robot) throws IOException, ClassNotFoundException {
         RobotConfig cnf = new RobotConfig(robot);
@@ -90,8 +94,7 @@ public class MainApplicationFrame extends JFrame {
             r.setX(Double.parseDouble(config[0].split(":")[1]));
             r.setY(Double.parseDouble(config[1].split(":")[1]));
             r.setDirection(Double.parseDouble(config[2].split(":")[1]));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -135,5 +138,16 @@ public class MainApplicationFrame extends JFrame {
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
         frame.setVisible(true);
+    }
+
+    public static void updateLanguage(String bundleName, Locale locale) {
+        bundle = ResourceBundle.getBundle(bundleName, locale);
+        try {
+            String encodeWithUTF = new String(bundle.getString ("scheme").getBytes(StandardCharsets.ISO_8859_1),"windows-1251");
+            System.out.println(encodeWithUTF);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
     }
 }
