@@ -1,5 +1,7 @@
 package gui.menu;
 
+import gui.frames.MainApplicationFrame;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,6 +24,8 @@ public class MenuStore extends Component {
     private JMenu createClosingParagraph() {
         return JMenuFactory.createInstance("Опции", "Опциональные команды", MenuItemStore.getClosingParagraphItems());
     }
+
+
 
     public JMenu[] getAllMenus() {
         return new JMenu[]{createLookParagraph(), createTestParagraph(), createClosingParagraph()};

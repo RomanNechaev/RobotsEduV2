@@ -6,6 +6,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.swing.*;
 
 import com.sun.tools.javac.Main;
@@ -19,7 +21,7 @@ import static gui.WindowsConst.*;
 
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
-
+    public static ResourceBundle bundle = ResourceBundle.getBundle("resources/text_ru");
     public MainApplicationFrame(Robot robot) throws IOException, ClassNotFoundException {
         RobotConfig cnf = new RobotConfig(robot);
         int inset = 50;
@@ -149,5 +151,9 @@ public class MainApplicationFrame extends JFrame {
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
         frame.setVisible(true);
+    }
+
+    public static void updateLanguage(String bundleName, Locale locale) {
+        bundle = ResourceBundle.getBundle(bundleName, locale);
     }
 }

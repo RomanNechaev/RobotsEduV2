@@ -81,9 +81,9 @@ public abstract class WindowsCommon {
     }
 
     static boolean confirmClosing(Component window) {
-        String[] options = {"закрыть", "отмена"};
+        String[] options = {MainApplicationFrame.bundle.getString("close"), MainApplicationFrame.bundle.getString("cancel")};
         int answer = JOptionPane.showOptionDialog(window,
-                "Вы уверены?",
+                MainApplicationFrame.bundle.getString("confirm"),
                 "Closing",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
@@ -92,9 +92,9 @@ public abstract class WindowsCommon {
     }
 
     public static boolean confirmClearing() {
-        String[] options = {"да", "нет"};
+        String[] options = {MainApplicationFrame.bundle.getString("yes"), MainApplicationFrame.bundle.getString("no")};
         int answer = JOptionPane.showOptionDialog(null,
-                "Лог заполнен. Добавить сообщение?",
+                MainApplicationFrame.bundle.getString("full_log"),
                 "Overflow",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
