@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import javax.swing.*;
 
+import com.sun.tools.javac.Main;
 import gui.state.RobotConfig;
 import gui.state.WindowConfiguration;
 import logic.Robot;
@@ -34,6 +35,7 @@ public class MainApplicationFrame extends JFrame {
 
         LogWindow logWindow = createLogWindow();
         GameWindow gameWindow = createGameWindow(robot);
+        CoordinatesWindow coordinatesWindow = createCoordinatesWindow();
         if (Files.exists(Path.of(System.getProperty("user.home"), "data.out"))) {
             restoreConfiguration(logWindow, gameWindow);
         }
@@ -41,10 +43,14 @@ public class MainApplicationFrame extends JFrame {
             restoreConfig(robot);
         }
 
+        robot.subscribe(coordinatesWindow);
+
         addWindow(logWindow);
         addWindow(gameWindow);
+        addWindow(coordinatesWindow);
 
 
+        exitWindow(coordinatesWindow, cnf);
         exitWindow(gameWindow, cnf);
         exitWindow(logWindow, cnf);
         exitWindow(MainApplicationFrame.this, cnf);
@@ -114,6 +120,14 @@ public class MainApplicationFrame extends JFrame {
             e.printStackTrace();
         }
         return configs;
+    }
+
+    protected CoordinatesWindow createCoordinatesWindow() {
+        CoordinatesWindow coordinatesWindow = new CoordinatesWindow("Координаты");
+        coordinatesWindow.setSize(coordinatesWidth, coordinatesHeight);
+        coordinatesWindow.setLocation(MainApplicationFrame.this.getWidth()  - coordinatesWidth / 2, 0);
+        coordinatesWindow.isBackgroundSet();
+        return coordinatesWindow;
     }
 
     protected GameWindow createGameWindow(Robot robot) {
