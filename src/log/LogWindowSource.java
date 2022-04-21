@@ -3,87 +3,105 @@ package log;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
- * Что починить:
- * 1. Этот класс порождает утечку ресурсов (связанные слушатели оказываются
- * удерживаемыми в памяти)
- * 2. Этот класс хранит активные сообщения лога, но в такой реализации он 
- * их лишь накапливает. Надо же, чтобы количество сообщений в логе было ограничено 
- * величиной m_iQueueLength (т.е. реально нужна очередь сообщений 
- * ограниченного размера) 
- */
+import static gui.WindowsCommon.*;
+
 public class LogWindowSource
 {
-    private int m_iQueueLength;
-    
-    private ArrayList<LogEntry> m_messages;
-    private final ArrayList<LogChangeListener> m_listeners;
-    private volatile LogChangeListener[] m_activeListeners;
-    
-    public LogWindowSource(int iQueueLength) 
+    private int mIQueueLength;
+
+    private ArrayList<LogEntry> mMessages;
+    private final ArrayList<LogChangeListener> mListeners;
+    private volatile LogChangeListener[] mActiveListeners;
+
+    public LogWindowSource(int iQueueLength)
     {
-        m_iQueueLength = iQueueLength;
-        m_messages = new ArrayList<LogEntry>(iQueueLength);
-        m_listeners = new ArrayList<LogChangeListener>();
+        mIQueueLength = iQueueLength;
+        mMessages = new ArrayList<LogEntry>(iQueueLength);
+        mListeners = new ArrayList<LogChangeListener>();
     }
-    
+
     public void registerListener(LogChangeListener listener)
     {
-        synchronized(m_listeners)
+        synchronized(mListeners)
         {
-            m_listeners.add(listener);
-            m_activeListeners = null;
+            mListeners.add(listener);
+            mActiveListeners = null;
         }
     }
-    
+
     public void unregisterListener(LogChangeListener listener)
     {
-        synchronized(m_listeners)
+        synchronized(mListeners)
         {
-            m_listeners.remove(listener);
-            m_activeListeners = null;
+            mListeners.remove(listener);
+            mActiveListeners = null;
         }
     }
-    
+
     public void append(LogLevel logLevel, String strMessage)
     {
-        LogEntry entry = new LogEntry(logLevel, strMessage);
-        m_messages.add(entry);
-        LogChangeListener [] activeListeners = m_activeListeners;
-        if (activeListeners == null)
-        {
-            synchronized (m_listeners)
-            {
-                if (m_activeListeners == null)
-                {
-                    activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                    m_activeListeners = activeListeners;
+        if(size() < mIQueueLength) {
+            LogEntry entry = new LogEntry(logLevel, strMessage);
+            mMessages.add(entry);
+            LogChangeListener[] activeListeners = mActiveListeners;
+
+            if (activeListeners == null) {
+                synchronized (mListeners) {
+                    if (mActiveListeners == null) {
+                        activeListeners = mListeners.toArray(new LogChangeListener[0]);
+                        mActiveListeners = activeListeners;
+                    }
                 }
             }
+            for (LogChangeListener listener : activeListeners) {
+                listener.onLogChanged();
+            }
         }
-        for (LogChangeListener listener : activeListeners)
-        {
+        else {
+            if (confirmClearing()) {
+                deleteOldEntry();
+                Logger.debug("Очень новая строка");
+            }
+        }
+    }
+
+    public void deleteOldEntry()
+    {
+        mMessages.remove(0);
+        LogChangeListener[] activeListeners = mActiveListeners;
+
+        for (LogChangeListener listener : activeListeners) {
             listener.onLogChanged();
         }
     }
-    
+
+    public void reset()
+    {
+        mMessages.clear();
+        LogChangeListener[] activeListeners = mActiveListeners;
+
+        for (LogChangeListener listener : activeListeners) {
+            listener.onLogChanged();
+        }
+    }
+
     public int size()
     {
-        return m_messages.size();
+        return mMessages.size();
     }
 
     public Iterable<LogEntry> range(int startFrom, int count)
     {
-        if (startFrom < 0 || startFrom >= m_messages.size())
+        if (startFrom < 0 || startFrom >= mMessages.size())
         {
             return Collections.emptyList();
         }
-        int indexTo = Math.min(startFrom + count, m_messages.size());
-        return m_messages.subList(startFrom, indexTo);
+        int indexTo = Math.min(startFrom + count, mMessages.size());
+        return mMessages.subList(startFrom, indexTo);
     }
 
     public Iterable<LogEntry> all()
     {
-        return m_messages;
+        return mMessages;
     }
 }
