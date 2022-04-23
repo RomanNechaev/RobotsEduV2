@@ -13,7 +13,6 @@ public class CoordinatesWindow extends JInternalFrame implements RobotObserver {
         super(title, true, true, true, true);
         area = new TextArea("");
         area.setSize(500, 500);
-        area.setEditable(false);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(area, BorderLayout.CENTER);
@@ -23,6 +22,6 @@ public class CoordinatesWindow extends JInternalFrame implements RobotObserver {
 
     @Override
     public void update(double x, double y, double direction) {
-        area.setText("X: " + x + "\nY: " + y);
+        area.setText("X: " + String.format("%.2f", x) + "\nY: " + String.format("%.2f", y));
     }
 }

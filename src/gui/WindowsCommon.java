@@ -1,5 +1,6 @@
 package gui;
 
+import gui.frames.MainApplicationFrame;
 import gui.state.RobotConfig;
 import gui.state.WindowConfiguration;
 
