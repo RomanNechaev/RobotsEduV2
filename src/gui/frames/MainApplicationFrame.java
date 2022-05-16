@@ -11,12 +11,9 @@ import gui.state.NameUpdateMethods;
 import gui.state.RestoreFunctions;
 import gui.state.RobotConfig;
 import logic.Robot;
-import log.Logger;
 
 import static gui.WindowsCommon.*;
-import static gui.WindowsConst.*;
 import static gui.frames.FramesStore.*;
-import static gui.state.NameUpdateMethods.*;
 
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();

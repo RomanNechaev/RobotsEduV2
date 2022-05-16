@@ -6,12 +6,15 @@ import java.io.Serializable;
 import java.util.*;
 
 import static logic.MathOperations.*;
-import static logic.Const.*;
+import static logic.RobotConstants.*;
 
 public class Robot implements Serializable {
     private volatile double x = startX;
     private volatile double y = startY;
     private volatile double direction = 0;
+    private double speed;
+
+    public volatile int health;
 
     private List<RobotObserver> observers = new ArrayList<>();
 
