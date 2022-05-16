@@ -1,7 +1,12 @@
 package gui.menu;
 
+import gui.frames.MainApplicationFrame;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
+
+import static gui.frames.MainApplicationFrame.bundle;
 
 public class MenuStore extends Component {
     private JFrame jframe;
@@ -12,7 +17,7 @@ public class MenuStore extends Component {
         MenuItemStore itemStore = new MenuItemStore(jframe);
     }
     private JMenu createLookParagraph() {
-        return JMenuFactory.createInstance("Режим отображения", "Управление режимом отображения приложения", MenuItemStore.getLookParagraphItems());
+        return JMenuFactory.createInstance(bundle.getString("lookParagraph"), "Управление режимом отображения приложения", MenuItemStore.getLookParagraphItems());
     }
 
     private JMenu createTestParagraph() {
@@ -20,7 +25,7 @@ public class MenuStore extends Component {
     }
 
     private JMenu createClosingParagraph() {
-        return JMenuFactory.createInstance("Опции", "Опциональные команды", MenuItemStore.getClosingParagraphItems());
+        return JMenuFactory.createInstance("Опции", "Опциональные команды", MenuItemStore.getOptionParagraphItems());
     }
 
     public JMenu[] getAllMenus() {
