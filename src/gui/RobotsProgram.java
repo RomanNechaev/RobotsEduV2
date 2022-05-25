@@ -2,6 +2,7 @@ package gui;
 
 import gui.frames.MainApplicationFrame;
 import logic.Robot;
+import logic.Robot2;
 
 import java.awt.Frame;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import javax.swing.UIManager;
 public class RobotsProgram {
     public static void main(String[] args) {
         Robot robot = new Robot();
+        Robot2 robot2 = new Robot2();
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (Exception e) {
@@ -20,7 +22,7 @@ public class RobotsProgram {
         SwingUtilities.invokeLater(() -> {
             MainApplicationFrame frame = null;
             try {
-                frame = new MainApplicationFrame(robot);
+                frame = new MainApplicationFrame(robot, robot2);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

@@ -6,14 +6,14 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import logic.Robot;
+import logic.Robot2;
 
-public class GameWindow extends JInternalFrame
-{
+public class GameWindow extends JInternalFrame {
     private final GameVisualizer mVisualizer;
-    public GameWindow(Robot robot, String title)
-    {
+
+    public GameWindow(Robot robot, Robot2 robot2, String title) {
         super(title, true, true, true, true);
-        mVisualizer = new GameVisualizer(robot);
+        mVisualizer = new GameVisualizer(robot, robot2);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(mVisualizer, BorderLayout.CENTER);
         setName("GameWindow");

@@ -11,6 +11,7 @@ import gui.state.NameUpdateMethods;
 import gui.state.RestoreFunctions;
 import gui.state.RobotConfig;
 import logic.Robot;
+import logic.Robot2;
 
 import static gui.WindowsCommon.*;
 import static gui.frames.FramesStore.*;
@@ -21,7 +22,7 @@ public class MainApplicationFrame extends JFrame {
     private static JMenuBar bar;
     private static JInternalFrame[] windows;
 
-    public MainApplicationFrame(Robot robot) throws IOException, ClassNotFoundException {
+    public MainApplicationFrame(Robot robot, Robot2 robot2) throws IOException, ClassNotFoundException {
         RobotConfig cnf = new RobotConfig(robot);
         int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -34,7 +35,7 @@ public class MainApplicationFrame extends JFrame {
         setName("MainWindow");
 
         LogWindow logWindow = createLogWindow();
-        GameWindow gameWindow = createGameWindow(robot, bundle.getString("gameWindow"));
+        GameWindow gameWindow = createGameWindow(robot, robot2, bundle.getString("gameWindow"));
         CoordinatesWindow coordinatesWindow = createCoordinatesWindow(MainApplicationFrame.this.getWidth());
         if (Files.exists(Path.of(System.getProperty("user.home"), "data.out"))) {
             RestoreFunctions.restoreConfiguration(this, this.desktopPane, logWindow, gameWindow);
