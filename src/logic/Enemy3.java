@@ -7,29 +7,27 @@ import java.util.List;
 
 import static logic.MathOperations.*;
 import static logic.MathOperations.asNormalizedRadians;
-import static logic.RobotConstants.*;
+import static logic.RobotConstants.maxAngularVelocity;
 import static logic.RobotConstants.maxVelocity;
 
-public class Bullet {
-    private volatile double x;
-    private volatile double y;
+public class Enemy3 extends Enemy{
+    private volatile double x = 234;
+    private volatile double y = 234;
     private volatile double direction = 0;
-
-    public Bullet(double robotX, double robotY) {
-        this.x = robotX;
-        this.y = robotY;
-    }
-
+    private volatile int health = 5;
+    private volatile double velocity = 0.043;
     private List<RobotObserver> observers = new ArrayList<>();
 
     public void move(int targetX, int targetY) {
+
         double distance = distance(targetX, targetY, x, y);
+
         if (distance < 0.5) {
             return;
         }
         double angleToTarget = angleTo(x, y, targetX, targetY, direction);
         double angularVelocity = calculateAngularVelocity(angleToTarget, direction, maxAngularVelocity);
-        double velocity = 0;
+        //double velocity = 0.1;
 
         if (angularVelocity == 0)
             velocity = maxVelocity;
@@ -44,12 +42,12 @@ public class Bullet {
         for (RobotObserver observer : observers) {
             observer.update(x, y, direction);
         }
+
     }
 
     public void subscribe(RobotObserver observer) {
         observers.add(observer);
     }
-
 
     public double getX() {
         return x;
@@ -66,4 +64,21 @@ public class Bullet {
     public void setY(double y) {
         this.y = y;
     }
+
+    public void setDirection(double direction) {
+        this.direction = direction;
+    }
+
+    public double getDirection() {
+        return direction;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
 }

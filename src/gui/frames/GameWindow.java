@@ -14,6 +14,7 @@ public class GameWindow extends JInternalFrame {
     public GameWindow(Robot robot, Robot2 robot2, String title) {
         super(title, true, true, true, true);
         mVisualizer = new GameVisualizer(robot, robot2);
+        mVisualizer.setFocusable(true);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(mVisualizer, BorderLayout.CENTER);
         setName("GameWindow");

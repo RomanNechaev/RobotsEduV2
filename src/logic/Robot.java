@@ -13,8 +13,8 @@ public class Robot implements Serializable {
     private volatile double y = startY;
     private volatile double direction = 0;
     private double speed;
-
-    public volatile int health;
+    private volatile int health = 20;
+    private volatile int targetPoints = 0;
 
     private List<RobotObserver> observers = new ArrayList<>();
 
@@ -69,6 +69,23 @@ public class Robot implements Serializable {
     public double getDirection() {
         return direction;
     }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setTargetPoints(int targetPoints) {
+        this.targetPoints = targetPoints;
+    }
+
+    public int getTargetPoints() {
+        return targetPoints;
+    }
+
 
     @Override
     public String toString() {
