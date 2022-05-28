@@ -7,13 +7,10 @@ import logic.Robot;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import static logic.MathOperations.round;
 
@@ -52,20 +49,17 @@ public class GameVisualizer extends JPanel implements RobotObserver {
     private volatile boolean bonus3IsPaint = true;
     private volatile Integer robot1SpeedDrawing = 1;
     private volatile Integer robot2SpeedDrawing = 3;
-    private volatile int width;
-    private volatile int height;
-    private ArrayList<Thread> threads;
+    private final int width = 400;
+    private final int height = 400;
 
-    private volatile Timer enemyTimer;
-    private volatile Timer enemy2Timer;
-    private volatile Timer enemyT3Timer;
-    private volatile Timer target1Timer;
-    private volatile Timer target2Timer;
+    private final Timer enemyTimer;
+    private final Timer enemy2Timer;
+    private final Timer enemy3Timer;
+    private final Timer target1Timer;
+    private final Timer target2Timer;
 
 
     public GameVisualizer(Robot robot, Robot2 robot2) {
-        width = 400;
-        height = 400;
         this.robot = robot;
         this.robot2 = robot2;
         setFocusable(true);
@@ -84,12 +78,11 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         enemy1.subscribe(this);
         enemy2.subscribe(this);
         enemy3.subscribe(this);
-        threads = new ArrayList<>();
         Timer m_timer = initTimer();
         AtomicReference<Timer> robot2Timer = new AtomicReference<>(initTimer());
         enemyTimer = initTimer();
         enemy2Timer = initTimer();
-        enemyT3Timer = initTimer();
+        enemy3Timer = initTimer();
         target1Timer = initTimer();
         target2Timer = initTimer();
         obstracle1 = new Obstracle(100, 100, 50, 60);
@@ -126,12 +119,14 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         enemy2Timer.schedule(new TimerTask() {
             public void run() {
                 enemy2.move(round(robot.getX()), round(robot.getY()));
+                repaint();
             }
         }, 0, 7);
 
-        enemyT3Timer.schedule(new TimerTask() {
+        enemy3Timer.schedule(new TimerTask() {
             public void run() {
                 enemy3.move(round(robot.getX()), round(robot.getY()));
+                repaint();
             }
         }, 0, 5);
 
@@ -139,6 +134,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         var taskForRobot = new TimerTask() {
             public void run() {
                 robot2.move(round(target2.getX()), round(target2.getY()));
+                repaint();
             }
         };
 
@@ -154,6 +150,26 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                 repaint();
             }
         });
+
+
+        new Thread(()
+                -> {
+            while (true) {
+                synchronized (robot) {
+                    if (!robot2IsLive && !robot1IsLive) {
+                        JOptionPane.showMessageDialog(null,
+                                "Игра закончена");
+                        m_timer.cancel();
+                        robot2Timer.get().cancel();
+                        enemyTimer.cancel();
+                        enemy2Timer.cancel();
+                        enemy3Timer.cancel();
+                        break;
+                    }
+                }
+            }
+        }).start();
+
         new Thread(()
                 -> {
             while (true) {
@@ -169,6 +185,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         target2.setY(getRandomNumber(height));
 
                     }
+                    repaint();
                 }
             }
         }).start();
@@ -188,6 +205,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         target1.setY(getRandomNumber(height));
 
                     }
+                    repaint();
                 }
             }
         }).start();
@@ -195,7 +213,6 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         new Thread(()
                 -> {
             while (true) {
-
                 synchronized (robot2) {
                     if (checkIntersection(robot2, bonus1, 20)) {
                         robot2.setHealth(robot2.getHealth() + 1);
@@ -204,13 +221,13 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         break;
                     }
                 }
+                repaint();
             }
         }).start();
 
         new Thread(()
                 -> {
             while (true) {
-
                 synchronized (robot) {
                     if (checkIntersection(robot, bonus1, 20)) {
                         robot.setHealth(robot.getHealth() + 1);
@@ -219,13 +236,13 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         break;
                     }
                 }
+                repaint();
             }
         }).start();
 
         new Thread(()
                 -> {
             while (true) {
-
                 synchronized (bonus2) {
                     if (checkIntersection(robot2, bonus2, 15)) {
                         if (robot2.getTargetPoints() != 0)
@@ -234,6 +251,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         break;
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -249,6 +267,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         break;
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -262,6 +281,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         break;
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -278,6 +298,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         break;
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -317,6 +338,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         System.out.println(robot.getHealth());
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -343,6 +365,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         System.out.println(robot.getHealth());
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -370,6 +393,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         System.out.println(robot.getHealth());
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -396,6 +420,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         System.out.println(robot2.getHealth());
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -422,6 +447,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         System.out.println(robot2.getHealth());
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -448,6 +474,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         System.out.println(robot2.getHealth());
                     }
                 }
+                repaint();
             }
         }).start();
 
@@ -461,8 +488,9 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                     robot2.bullet.setY(robot2.getY());
                     bulletIsPaint = true;
                     Timer bulletTimer = initTimer();
-                    var enemyX = getNearestEnemy(robot2, enemy1, enemy2, enemy3).getX();
-                    var enemyY = getNearestEnemy(robot2, enemy1, enemy2, enemy3).getY();
+                    var enemy = getNearestEnemy(robot2, enemy1, enemy2, enemy3);
+                    var enemyX = enemy.getX();
+                    var enemyY = enemy.getY();
                     bulletTimer.schedule(new TimerTask() {
                         public void run() {
                             robot2.shoot(round(enemyX), round(enemyY));
@@ -489,20 +517,18 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                                 bulletIsPaint = false;
                                 break;
                             }
+                            repaint();
                         }
+
                     }).start();
 
-                    if (enemy1IsLive) {
+                    if (enemy1IsLive && enemy.getNamE().equals("enemy")) {
                         new Thread(()
                                 -> {
                             while (true) {
                                 synchronized (enemy1) {
-                                    if (round(robot2.bullet.getX()) <= round(enemy1.getX() + 30) &&
-                                            round(robot2.bullet.getX()) >= round(enemy1.getX() - 30) &&
-                                            round(robot2.bullet.getY()) <= round(enemy1.getY() + 10)
-                                            && round(robot2.bullet.getY()) >= round(enemy1.getY() - 10)) {
+                                    if (checkIntersection(robot2.bullet, enemy1, 30, 10)) {
                                         enemy1.setHealth(enemy1.getHealth() - 1);
-                                        //System.out.println(enemy1.getHealth());
                                         if (enemy1.getHealth() == 0) {
                                             enemy1IsLive = false;
                                             bulletIsPaint = false;
@@ -512,19 +538,17 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                                     }
                                 }
                             }
+                            repaint();
                         }).start();
                     }
-                    if (enemy2IsLive) {
+
+                    if (enemy2IsLive && enemy.getNamE().equals("enemy2")) {
                         new Thread(()
                                 -> {
                             while (true) {
                                 synchronized (enemy2) {
-                                    if (round(robot2.bullet.getX()) <= round(enemy2.getX() + 30) &&
-                                            round(robot2.bullet.getX()) >= round(enemy2.getX() - 30) &&
-                                            round(robot2.bullet.getY()) <= round(enemy2.getY() + 10)
-                                            && round(robot2.bullet.getY()) >= round(enemy2.getY() - 10)) {
+                                    if (checkIntersection(robot2.bullet, enemy2, 30, 10)) {
                                         enemy2.setHealth(enemy2.getHealth() - 1);
-                                        //System.out.println(enemy2.getHealth());
                                         if (enemy2.getHealth() == 0) {
                                             enemy2IsLive = false;
                                             bulletIsPaint = false;
@@ -534,19 +558,16 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                                     }
                                 }
                             }
+                            repaint();
                         }).start();
                     }
-                    if (enemy3IsLive) {
+                    if (enemy3IsLive && enemy.getNamE().equals("enemy3")) {
                         new Thread(()
                                 -> {
                             while (true) {
                                 synchronized (enemy3) {
-                                    if (round(robot2.bullet.getX()) <= round(enemy3.getX() + 30) &&
-                                            round(robot2.bullet.getX()) >= round(enemy3.getX() - 30) &&
-                                            round(robot2.bullet.getY()) <= round(enemy3.getY() + 10)
-                                            && round(robot2.bullet.getY()) >= round(enemy3.getY() - 10)) {
+                                    if (checkIntersection(robot2.bullet, enemy3, 30, 10)) {
                                         enemy3.setHealth(enemy3.getHealth() - 1);
-                                        System.out.println(enemy3.getHealth());
                                         if (enemy3.getHealth() == 0) {
                                             enemy3IsLive = false;
                                             bulletIsPaint = false;
@@ -556,6 +577,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                                     }
                                 }
                             }
+                            repaint();
                         }).start();
                     }
                 }
@@ -564,18 +586,16 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         });
     }
 
-    private Pair<Double> getNearestEnemy(Robot robot, Enemy... enemies) {
+    private Enemy getNearestEnemy(Robot robot, Enemy... enemies) {
         double min = Double.MAX_VALUE;
-        double x = 0;
-        double y = 0;
+        Enemy enemy = null;
         for (var e : enemies) {
             if (robot.getDistanceTo(e) < min && e.getHealth() > 0) {
                 min = robot.getDistanceTo(e);
-                x = e.getX();
-                y = e.getY();
+                enemy = e;
             }
         }
-        return new Pair<Double>(x, y);
+        return enemy;
     }
 
     private int getRandomNumber(int From) {
@@ -583,11 +603,18 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         return 1 + (int) (Math.random() * From);
     }
 
-    private <T extends Entity> boolean checkIntersection(Robot robot, T entity, int delta) {
-        return round(robot.getX()) <= round(entity.getX() + delta) &&
-                round(robot.getX()) >= round(entity.getX() - delta) &&
-                round(robot.getY()) <= round(entity.getY() + delta)
-                && round(robot.getY()) >= round(entity.getY() - delta);
+    private <T extends Entity> boolean checkIntersection(T firs_entity, T second_entity, int delta) {
+        return round(firs_entity.getX()) <= round(second_entity.getX() + delta) &&
+                round(firs_entity.getX()) >= round(second_entity.getX() - delta) &&
+                round(firs_entity.getY()) <= round(second_entity.getY() + delta)
+                && round(firs_entity.getY()) >= round(second_entity.getY() - delta);
+    }
+
+    private <T extends Entity> boolean checkIntersection(T firs_entity, T second_entity, int delta, int delta2) {
+        return round(firs_entity.getX()) <= round(second_entity.getX() + delta) &&
+                round(firs_entity.getX()) >= round(second_entity.getX() - delta) &&
+                round(firs_entity.getY()) <= round(second_entity.getY() + delta2)
+                && round(firs_entity.getY()) >= round(second_entity.getY() - delta2);
     }
 
 
@@ -610,43 +637,47 @@ public class GameVisualizer extends JPanel implements RobotObserver {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        if (bulletIsPaint) {
-            drawBullet(g2d, round(robot2.bullet.getX()), round(robot2.bullet.getY()));
-        }
-        if (bonus1IsPaint) {
-            drawBonus(g2d, round(bonus1.getX()), round(bonus1.getY()));
-        }
-        if (bonus2IsPaint) {
-            drawBonus2(g2d, round(bonus2.getX()), round(bonus2.getY()));
-        }
-        if (bonus3IsPaint) {
-            drawBonus3(g2d, round(bonus3.getX()), round(bonus3.getY()));
-        }
-        if (robot1IsLive) {
-            drawRobot(g2d, round(robot.getX()), round(robot.getY()), robot.getDirection());
-        }
-        if (robot2IsLive) {
-            drawRobot(g2d, round(robot2.getX()), round(robot2.getY()), robot2.getDirection());
-        }
-        drawTarget(g2d, mTargetPositionX, mTargetPositionY);
-        drawTarget(g2d, round(target1.getX()), round(target1.getY()), Color.pink);
-        drawTarget(g2d, round(target2.getX()), round(target2.getY()), Color.darkGray);
-        if (enemy1IsLive && enemy2IsLive && enemy3IsLive) {
-            drawEnemy(g2d, round(enemy1.getX()), round(enemy1.getY()), round(enemy1.getDirection()));
-            drawEnemy(g2d, round(enemy2.getX()), round(enemy2.getY()), round(enemy2.getDirection()));
-            drawEnemy(g2d, round(enemy3.getX()), round(enemy3.getY()), round(enemy3.getDirection()));
-        } else {
-            if (enemy1IsLive) {
-                drawEnemy(g2d, round(enemy1.getX()), round(enemy1.getY()), round(enemy1.getDirection()));
-            }
-            if (enemy2IsLive) {
-                drawEnemy(g2d, round(enemy2.getX()), round(enemy2.getY()), round(enemy2.getDirection()));
-            }
-            if (enemy3IsLive) {
-                drawEnemy(g2d, round(enemy3.getX()), round(enemy3.getY()), round(enemy3.getDirection()));
-            }
-        }
 
+        if (robot1IsLive && robot2IsLive) {
+
+
+            if (bulletIsPaint) {
+                drawBullet(g2d, round(robot2.bullet.getX()), round(robot2.bullet.getY()));
+            }
+            if (bonus1IsPaint) {
+                drawBonus(g2d, round(bonus1.getX()), round(bonus1.getY()));
+            }
+            if (bonus2IsPaint) {
+                drawBonus2(g2d, round(bonus2.getX()), round(bonus2.getY()));
+            }
+            if (bonus3IsPaint) {
+                drawBonus3(g2d, round(bonus3.getX()), round(bonus3.getY()));
+            }
+            if (robot1IsLive) {
+                drawRobot(g2d, round(robot.getX()), round(robot.getY()), robot.getDirection());
+            }
+            if (robot2IsLive) {
+                drawRobot(g2d, round(robot2.getX()), round(robot2.getY()), robot2.getDirection());
+            }
+            drawTarget(g2d, mTargetPositionX, mTargetPositionY);
+            drawTarget(g2d, round(target1.getX()), round(target1.getY()), Color.pink);
+            drawTarget(g2d, round(target2.getX()), round(target2.getY()), Color.darkGray);
+            if (enemy1IsLive && enemy2IsLive && enemy3IsLive) {
+                drawEnemy(g2d, round(enemy1.getX()), round(enemy1.getY()), round(enemy1.getDirection()));
+                drawEnemy(g2d, round(enemy2.getX()), round(enemy2.getY()), round(enemy2.getDirection()));
+                drawEnemy(g2d, round(enemy3.getX()), round(enemy3.getY()), round(enemy3.getDirection()));
+            } else {
+                if (enemy1IsLive) {
+                    drawEnemy(g2d, round(enemy1.getX()), round(enemy1.getY()), round(enemy1.getDirection()));
+                }
+                if (enemy2IsLive) {
+                    drawEnemy(g2d, round(enemy2.getX()), round(enemy2.getY()), round(enemy2.getDirection()));
+                }
+                if (enemy3IsLive) {
+                    drawEnemy(g2d, round(enemy3.getX()), round(enemy3.getY()), round(enemy3.getDirection()));
+                }
+            }
+        }
     }
 
 

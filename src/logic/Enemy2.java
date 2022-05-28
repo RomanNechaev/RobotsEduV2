@@ -18,6 +18,7 @@ public class Enemy2 extends Enemy implements Entity {
     private volatile int health = 4;
     private volatile double velocity = 0.07;
     private List<RobotObserver> observers = new ArrayList<>();
+    private static final String name = "enemy1";
 
     public void move(int targetX, int targetY) {
 
@@ -81,4 +82,9 @@ public class Enemy2 extends Enemy implements Entity {
     public int getHealth() {
         return health;
     }
+
+    public String getNamE() {
+        return name;
+    }
+
 }

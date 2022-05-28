@@ -17,6 +17,7 @@ public class Enemy implements Entity{
     private volatile int health = 2;
     private volatile double velocity = 0.1;
     private List<RobotObserver> observers = new ArrayList<>();
+    private static final String name = "enemy";
 
 //    public Enemy(){
 //        new Enemy(x, y, direction, health, velocity);
@@ -90,5 +91,9 @@ public class Enemy implements Entity{
 
     public int getHealth() {
         return health;
+    }
+
+    public String getNamE() {
+        return name;
     }
 }

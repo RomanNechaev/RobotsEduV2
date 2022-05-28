@@ -10,13 +10,15 @@ import static logic.MathOperations.asNormalizedRadians;
 import static logic.RobotConstants.maxAngularVelocity;
 import static logic.RobotConstants.maxVelocity;
 
-public class Enemy3 extends Enemy implements Entity{
+public class Enemy3 extends Enemy implements Entity {
     private volatile double x = 234;
     private volatile double y = 234;
     private volatile double direction = 0;
     private volatile int health = 5;
     private volatile double velocity = 0.043;
     private List<RobotObserver> observers = new ArrayList<>();
+    private static final String name = "enemy2";
+
 
     public void move(int targetX, int targetY) {
 
@@ -79,6 +81,10 @@ public class Enemy3 extends Enemy implements Entity{
 
     public int getHealth() {
         return health;
+    }
+
+    public String getNamE() {
+        return name;
     }
 
 }

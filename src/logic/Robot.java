@@ -8,7 +8,7 @@ import java.util.*;
 import static logic.MathOperations.*;
 import static logic.RobotConstants.*;
 
-public class Robot implements Serializable {
+public class Robot implements Serializable, Entity {
     private volatile double x = startX;
     private volatile double y = startY;
     private volatile double direction = 0;

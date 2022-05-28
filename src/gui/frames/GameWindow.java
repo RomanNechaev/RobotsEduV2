@@ -21,5 +21,7 @@ public class GameWindow extends JInternalFrame {
         getContentPane().add(panel);
         pack();
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setResizable(false);
     }
+
 }
