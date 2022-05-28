@@ -93,4 +93,10 @@ public class Robot implements Serializable {
                 + "y:" + y
                 + "direction:" + direction + "}";
     }
+
+
+
+    public double getDistanceTo(Enemy en) {
+        return Math.sqrt(this.x * en.getX() + this.y * en.getY());
+    }
 }

@@ -3,10 +3,9 @@ package logic;
 import static logic.MathOperations.*;
 import static logic.MathOperations.asNormalizedRadians;
 import static logic.RobotConstants.*;
-import static logic.RobotConstants.startY;
 
 public class Robot2 extends Robot {
-
+    public volatile int health = 30;
     public volatile Bullet bullet = new Bullet(this.getX(), this.getY());
 
     public void shoot(int targetX, int targetY) {
