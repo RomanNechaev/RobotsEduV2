@@ -84,7 +84,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         enemy1.subscribe(this);
         enemy2.subscribe(this);
         enemy3.subscribe(this);
-        threads = new ArrayList<> ();
+        threads = new ArrayList<>();
         Timer m_timer = initTimer();
         AtomicReference<Timer> robot2Timer = new AtomicReference<>(initTimer());
         enemyTimer = initTimer();
@@ -95,7 +95,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         obstracle1 = new Obstracle(100, 100, 50, 60);
         m_timer.schedule(new TimerTask() {
             public void run() {
-                robot.move(target1.getX(), target1.getY());
+                robot.move(round(target1.getX()), round(target1.getY()));
                 repaint();
             }
         }, 0, robot1SpeedDrawing);
@@ -163,15 +163,30 @@ public class GameVisualizer extends JPanel implements RobotObserver {
                         robot2Timer.get().cancel();
                         break;
                     }
-                    if (round(robot2.getX()) <= round(target2.getX() + 25) &&
-                            round(robot2.getX()) >= round(target2.getX() - 25) &&
-                            round(robot2.getY()) <= round(target2.getY() + 25)
-                            && round(robot2.getY()) >= round(target2.getY() - 2250)) {
+                    if (checkIntersection(robot2, target2, 25)) {
                         robot2.setTargetPoints(robot2.getTargetPoints() + 1);
                         target2.setX(getRandomNumber(width));
                         target2.setY(getRandomNumber(height));
 
-                        System.out.println(robot2.getTargetPoints());
+                    }
+                }
+            }
+        }).start();
+
+        new Thread(()
+                -> {
+            while (true) {
+                synchronized (robot) {
+                    if (robot.getHealth() == 0) {
+                        robot1IsLive = false;
+                        m_timer.cancel();
+                        break;
+                    }
+                    if (checkIntersection(robot, target1, 25)) {
+                        robot.setTargetPoints(robot.getTargetPoints() + 1);
+                        target1.setX(getRandomNumber(width));
+                        target1.setY(getRandomNumber(height));
+
                     }
                 }
             }
@@ -182,10 +197,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot2) {
-                    if (round(robot2.getX()) <= round(bonus1.getX() + 20) &&
-                            round(robot2.getX()) >= round(bonus1.getX() - 20) &&
-                            round(robot2.getY()) <= round(bonus1.getY() + 20)
-                            && round(robot2.getY()) >= round(bonus1.getY() - 20)) {
+                    if (checkIntersection(robot2, bonus1, 20)) {
                         robot2.setHealth(robot2.getHealth() + 1);
                         System.out.println(robot2.getHealth());
                         bonus1IsPaint = false;
@@ -200,10 +212,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot) {
-                    if (round(robot.getX()) <= round(bonus1.getX() + 20) &&
-                            round(robot.getX()) >= round(bonus1.getX() - 20) &&
-                            round(robot.getY()) <= round(bonus1.getY() + 20)
-                            && round(robot.getY()) >= round(bonus1.getY() - 20)) {
+                    if (checkIntersection(robot, bonus1, 20)) {
                         robot.setHealth(robot.getHealth() + 1);
                         System.out.println(robot.getHealth());
                         bonus1IsPaint = false;
@@ -218,10 +227,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (bonus2) {
-                    if (round(robot2.getX()) <= round(bonus2.getX() + 15) &&
-                            round(robot2.getX()) >= round(bonus2.getX() - 15) &&
-                            round(robot2.getY()) <= round(bonus2.getY() + 15)
-                            && round(robot2.getY()) >= round(bonus2.getY() - 15)) {
+                    if (checkIntersection(robot2, bonus2, 15)) {
                         if (robot2.getTargetPoints() != 0)
                             robot2.setTargetPoints(robot2.getTargetPoints() * 2);
                         bonus2IsPaint = false;
@@ -236,12 +242,22 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (bonus2) {
-                    if (round(robot.getX()) <= round(bonus2.getX() + 15) &&
-                            round(robot.getX()) >= round(bonus2.getX() - 15) &&
-                            round(robot.getY()) <= round(bonus2.getY() + 15)
-                            && round(robot.getY()) >= round(bonus2.getY() - 15)) {
-                        if (robot2.getTargetPoints() != 0)
-                            robot2.setTargetPoints(robot2.getTargetPoints() * 2);
+                    if (checkIntersection(robot, bonus2, 15)) {
+                        if (robot.getTargetPoints() != 0)
+                            robot.setTargetPoints(robot.getTargetPoints() * 2);
+                        bonus2IsPaint = false;
+                        break;
+                    }
+                }
+            }
+        }).start();
+
+        new Thread(()
+                -> {
+            while (true) {
+                synchronized (bonus3) {
+                    if (checkIntersection(robot2, bonus3, 32)) {
+                        robot2SpeedDrawing -= 1;
                         bonus3IsPaint = false;
                         break;
                     }
@@ -254,31 +270,11 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (bonus3) {
-                    if (round(robot2.getX()) <= round(bonus3.getX() + 32) &&
-                            round(robot2.getX()) >= round(bonus3.getX() - 32) &&
-                            round(robot2.getY()) <= round(bonus3.getY() + 32)
-                            && round(robot2.getY()) >= round(bonus3.getY() - 32)) {
+                    if (checkIntersection(robot, bonus3, 32)) {
+                        if (robot.getTargetPoints() != 0)
+                            robot.setTargetPoints(robot.getTargetPoints() * 2);
                         robot1SpeedDrawing -= 1;
                         bonus3IsPaint = false;
-                        break;
-                    }
-                }
-            }
-        }).start();
-
-        new Thread(()
-                -> {
-            while (true) {
-
-                synchronized (bonus3) {
-                    if (round(robot.getX()) <= round(bonus2.getX() + 32) &&
-                            round(robot.getX()) >= round(bonus2.getX() - 32) &&
-                            round(robot.getY()) <= round(bonus2.getY() + 32)
-                            && round(robot.getY()) >= round(bonus2.getY() - 32)) {
-                        if (robot2.getTargetPoints() != 0)
-                            robot2.setTargetPoints(robot2.getTargetPoints() * 2);
-                        robot2SpeedDrawing -= 1;
-                        bonus2IsPaint = false;
                         break;
                     }
                 }
@@ -329,8 +325,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot) {
-                    if (robot.getHealth() == 0)
-                    {
+                    if (robot.getHealth() == 0) {
                         robot1IsLive = false;
                         m_timer.cancel();
                         target1Timer.cancel();
@@ -356,8 +351,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot) {
-                    if (robot.getHealth() == 0)
-                    {
+                    if (robot.getHealth() == 0) {
                         robot1IsLive = false;
                         m_timer.cancel();
                         target1Timer.cancel();
@@ -384,8 +378,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot2) {
-                    if (robot2.getHealth() == 0)
-                    {
+                    if (robot2.getHealth() == 0) {
                         robot2IsLive = false;
                         robot2Timer.get().cancel();
                         target2Timer.cancel();
@@ -411,8 +404,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot2) {
-                    if (robot2.getHealth() == 0)
-                    {
+                    if (robot2.getHealth() == 0) {
                         robot2IsLive = false;
                         robot2Timer.get().cancel();
                         target2Timer.cancel();
@@ -438,8 +430,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
             while (true) {
 
                 synchronized (robot2) {
-                    if (robot2.getHealth() == 0)
-                    {
+                    if (robot2.getHealth() == 0) {
                         robot2IsLive = false;
                         robot2Timer.get().cancel();
                         target2Timer.cancel();
@@ -464,7 +455,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_X && (enemy1IsLive || enemy2IsLive || enemy3IsLive)) {
+                if (e.getKeyCode() == KeyEvent.VK_X && (enemy1IsLive || enemy2IsLive || enemy3IsLive) && robot2IsLive) {
                     robot2Timer.get().cancel();
                     robot2.bullet.setX(robot2.getX());
                     robot2.bullet.setY(robot2.getY());
@@ -592,6 +583,14 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         return 1 + (int) (Math.random() * From);
     }
 
+    private <T extends Entity> boolean checkIntersection(Robot robot, T entity, int delta) {
+        return round(robot.getX()) <= round(entity.getX() + delta) &&
+                round(robot.getX()) >= round(entity.getX() - delta) &&
+                round(robot.getY()) <= round(entity.getY() + delta)
+                && round(robot.getY()) >= round(entity.getY() - delta);
+    }
+
+
     protected void setTargetPosition(Point p) {
         mTargetPositionX = p.x;
         mTargetPositionY = p.y;
@@ -604,9 +603,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
 
     @Override
     public void update(double x, double y, double direction) {
-        synchronized (robot) {
-            EventQueue.invokeLater(this::repaint);
-        }
+        EventQueue.invokeLater(this::repaint);
     }
 
     @Override
@@ -625,13 +622,10 @@ public class GameVisualizer extends JPanel implements RobotObserver {
         if (bonus3IsPaint) {
             drawBonus3(g2d, round(bonus3.getX()), round(bonus3.getY()));
         }
-        if (robot1IsLive)
-        {
+        if (robot1IsLive) {
             drawRobot(g2d, round(robot.getX()), round(robot.getY()), robot.getDirection());
-
         }
-        if(robot2IsLive)
-        {
+        if (robot2IsLive) {
             drawRobot(g2d, round(robot2.getX()), round(robot2.getY()), robot2.getDirection());
         }
         drawTarget(g2d, mTargetPositionX, mTargetPositionY);

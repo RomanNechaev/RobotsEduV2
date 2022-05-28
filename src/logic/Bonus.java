@@ -1,6 +1,6 @@
 package logic;
 
-public class Bonus {
+public class Bonus implements Entity {
     private volatile double x;
     private volatile double y;
 

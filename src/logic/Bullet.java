@@ -10,7 +10,7 @@ import static logic.MathOperations.asNormalizedRadians;
 import static logic.RobotConstants.*;
 import static logic.RobotConstants.maxVelocity;
 
-public class Bullet {
+public class Bullet implements Entity {
     private volatile double x;
     private volatile double y;
     private volatile double direction = 0;

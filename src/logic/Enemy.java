@@ -10,7 +10,7 @@ import static logic.MathOperations.asNormalizedRadians;
 import static logic.RobotConstants.*;
 import static logic.RobotConstants.maxVelocity;
 
-public class Enemy {
+public class Enemy implements Entity{
     private volatile double x = 300;
     private volatile double y = 300;
     private volatile double direction = 0;
