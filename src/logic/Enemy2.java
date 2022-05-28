@@ -2,30 +2,34 @@ package logic;
 
 import gui.state.RobotObserver;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static logic.MathOperations.*;
-import static logic.RobotConstants.*;
+import static logic.MathOperations.asNormalizedRadians;
+import static logic.RobotConstants.maxAngularVelocity;
+import static logic.RobotConstants.maxVelocity;
 
-public class Robot implements Serializable, Entity {
-    private volatile double x = startX;
-    private volatile double y = startY;
+public class Enemy2 extends Enemy implements Entity {
+
+    private volatile double x = 200;
+    private volatile double y = 200;
     private volatile double direction = 0;
-    private double speed;
-    private volatile int health = 20;
-    private volatile int targetPoints = 0;
-
+    private volatile int health = 4;
+    private volatile double velocity = 0.07;
     private List<RobotObserver> observers = new ArrayList<>();
+    private static final String name = "enemy1";
 
     public void move(int targetX, int targetY) {
+
         double distance = distance(targetX, targetY, x, y);
+
         if (distance < 0.5) {
             return;
         }
         double angleToTarget = angleTo(x, y, targetX, targetY, direction);
         double angularVelocity = calculateAngularVelocity(angleToTarget, direction, maxAngularVelocity);
-        double velocity = 0;
+        //double velocity = 0.1;
 
         if (angularVelocity == 0)
             velocity = maxVelocity;
@@ -40,6 +44,7 @@ public class Robot implements Serializable, Entity {
         for (RobotObserver observer : observers) {
             observer.update(x, y, direction);
         }
+
     }
 
     public void subscribe(RobotObserver observer) {
@@ -78,25 +83,8 @@ public class Robot implements Serializable, Entity {
         return health;
     }
 
-    public void setTargetPoints(int targetPoints) {
-        this.targetPoints = targetPoints;
+    public String getNamE() {
+        return name;
     }
 
-    public int getTargetPoints() {
-        return targetPoints;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Robot{" + "x:" + x
-                + "y:" + y
-                + "direction:" + direction + "}";
-    }
-
-
-
-    public double getDistanceTo(Enemy en) {
-        return Math.sqrt(this.x * en.getX() + this.y * en.getY());
-    }
 }

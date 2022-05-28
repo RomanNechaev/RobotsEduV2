@@ -2,6 +2,8 @@ package log;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static gui.WindowsCommon.*;
 
@@ -9,14 +11,14 @@ public class LogWindowSource
 {
     private int mIQueueLength;
 
-    private ArrayList<LogEntry> mMessages;
+    private LinkedBlockingDeque<LogEntry> mMessages;
     private final ArrayList<LogChangeListener> mListeners;
     private volatile LogChangeListener[] mActiveListeners;
 
     public LogWindowSource(int iQueueLength)
     {
         mIQueueLength = iQueueLength;
-        mMessages = new ArrayList<LogEntry>(iQueueLength);
+        mMessages = new LinkedBlockingDeque<>(iQueueLength);
         mListeners = new ArrayList<LogChangeListener>();
     }
 
@@ -53,8 +55,10 @@ public class LogWindowSource
                     }
                 }
             }
-            for (LogChangeListener listener : activeListeners) {
-                listener.onLogChanged();
+            if (activeListeners != null) {
+                for (LogChangeListener listener : activeListeners) {
+                        listener.onLogChanged();
+                }
             }
         }
         else {
@@ -67,7 +71,7 @@ public class LogWindowSource
 
     public void deleteOldEntry()
     {
-        mMessages.remove(0);
+        mMessages.removeFirst();
         LogChangeListener[] activeListeners = mActiveListeners;
 
         for (LogChangeListener listener : activeListeners) {
@@ -97,7 +101,7 @@ public class LogWindowSource
             return Collections.emptyList();
         }
         int indexTo = Math.min(startFrom + count, mMessages.size());
-        return mMessages.subList(startFrom, indexTo);
+        return mMessages.stream().skip(startFrom).limit(count).collect(Collectors.toList());
     }
 
     public Iterable<LogEntry> all()

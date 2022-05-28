@@ -2,19 +2,23 @@ package logic;
 
 import gui.state.RobotObserver;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static logic.MathOperations.*;
+import static logic.MathOperations.asNormalizedRadians;
 import static logic.RobotConstants.*;
+import static logic.RobotConstants.maxVelocity;
 
-public class Robot implements Serializable, Entity {
-    private volatile double x = startX;
-    private volatile double y = startY;
+public class Bullet implements Entity {
+    private volatile double x;
+    private volatile double y;
     private volatile double direction = 0;
-    private double speed;
-    private volatile int health = 20;
-    private volatile int targetPoints = 0;
+
+    public Bullet(double robotX, double robotY) {
+        this.x = robotX;
+        this.y = robotY;
+    }
 
     private List<RobotObserver> observers = new ArrayList<>();
 
@@ -46,6 +50,7 @@ public class Robot implements Serializable, Entity {
         observers.add(observer);
     }
 
+
     public double getX() {
         return x;
     }
@@ -60,43 +65,5 @@ public class Robot implements Serializable, Entity {
 
     public void setY(double y) {
         this.y = y;
-    }
-
-    public void setDirection(double direction) {
-        this.direction = direction;
-    }
-
-    public double getDirection() {
-        return direction;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setTargetPoints(int targetPoints) {
-        this.targetPoints = targetPoints;
-    }
-
-    public int getTargetPoints() {
-        return targetPoints;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Robot{" + "x:" + x
-                + "y:" + y
-                + "direction:" + direction + "}";
-    }
-
-
-
-    public double getDistanceTo(Enemy en) {
-        return Math.sqrt(this.x * en.getX() + this.y * en.getY());
     }
 }
