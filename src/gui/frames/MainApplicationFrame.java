@@ -36,7 +36,7 @@ public class MainApplicationFrame extends JFrame {
 
         LogWindow logWindow = createLogWindow();
         GameWindow gameWindow = createGameWindow(robot, robot2, bundle.getString("gameWindow"));
-        CoordinatesWindow coordinatesWindow = createCoordinatesWindow(MainApplicationFrame.this.getWidth());
+        CoordinatesWindow coordinatesWindow = createCoordinatesWindow(MainApplicationFrame.this.getWidth(), robot2);
         if (Files.exists(Path.of(System.getProperty("user.home"), "data.out"))) {
             RestoreFunctions.restoreConfiguration(this, this.desktopPane, logWindow, gameWindow);
         }

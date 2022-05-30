@@ -17,7 +17,7 @@ public class RobotConfig implements Serializable, RobotObserver {
     }
 
     @Override
-    public void update(double x, double y, double angle) {
+    public void update(double x, double y, double angle, int health, int targets) {
         X = x;
         Y = y;
         direction = angle;

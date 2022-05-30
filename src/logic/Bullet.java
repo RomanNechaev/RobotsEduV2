@@ -42,7 +42,7 @@ public class Bullet implements Entity {
         }
 
         for (RobotObserver observer : observers) {
-            observer.update(x, y, direction);
+            observer.update(x, y, direction, 0, 0);
         }
     }
 

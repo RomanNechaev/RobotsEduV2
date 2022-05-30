@@ -42,7 +42,7 @@ public class Enemy2 extends Enemy implements Entity {
         }
 
         for (RobotObserver observer : observers) {
-            observer.update(x, y, direction);
+            observer.update(x, y, direction, this.getHealth(), 0);
         }
 
     }

@@ -8,9 +8,9 @@ import static gui.WindowsConst.*;
 import static gui.WindowsConst.logWindowHeight;
 
 public class FramesStore {
-    public static CoordinatesWindow createCoordinatesWindow(int width) {
-        CoordinatesWindow coordinatesWindow = new CoordinatesWindow("Координаты");
-        coordinatesWindow.setSize(coordinatesWidth, coordinatesHeight);
+    public static CoordinatesWindow createCoordinatesWindow(int width, Robot2 robot2) {
+        CoordinatesWindow coordinatesWindow = new CoordinatesWindow("Координаты", robot2);
+        coordinatesWindow.setSize(coordinatesWidth, 380);
         coordinatesWindow.setLocation(width - coordinatesWidth / 2, 0);
         coordinatesWindow.isBackgroundSet();
         return coordinatesWindow;

@@ -629,7 +629,7 @@ public class GameVisualizer extends JPanel implements RobotObserver {
     }
 
     @Override
-    public void update(double x, double y, double direction) {
+    public void update(double x, double y, double direction, int health, int targets) {
         EventQueue.invokeLater(this::repaint);
     }
 

@@ -4,6 +4,7 @@ import gui.state.RobotObserver;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static logic.MathOperations.*;
 import static logic.RobotConstants.*;
@@ -38,7 +39,7 @@ public class Robot implements Serializable, Entity {
         }
 
         for (RobotObserver observer : observers) {
-            observer.update(x, y, direction);
+            observer.update(x, y, direction, health, targetPoints);
         }
     }
 

@@ -1,5 +1,5 @@
 package gui.state;
 
 public interface RobotObserver {
-    void update(double x, double y, double direction);
+    void update(double x, double y, double direction, int health, int targets);
 }
